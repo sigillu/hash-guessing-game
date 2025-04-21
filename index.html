@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hash Guessing Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      background-color: #ffffff;
+      color: #333;
+    }
+    .section {
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: #f9f9f9;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+    code {
+      background: #f0f0f0;
+      padding: 4px 6px;
+      border-radius: 4px;
+      display: block;
+      margin: 0.5rem 0;
+      font-family: monospace;
+      color: #333;
+    }
+    .hidden { display: none; }
+    button {
+      background-color: #007bff;
+      border: none;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 1rem;
+      margin-right: 0.5rem;
+    }
+    input[type="text"], select {
+      padding: 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      margin-right: 0.5rem;
+    }
+    .quiz-option {
+      background-color: #f0f0f0;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin: 0.25rem 0;
+      cursor: pointer;
+    }
+    .quiz-option:hover {
+      background-color: #007bff;
+      color: #fff;
+    }
+    ol li {
+      margin-bottom: 1rem;
+    }
+    .fade-in {
+      animation: fadeIn 1s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .clue-hints {
+      margin-top: 1rem;
+      line-height: 1.6;
+    }
+    .hint-highlight {
+      background-color: #ffffcc;
+      padding: 0.25rem 0.5rem;
+      border-left: 4px solid #ffcc00;
+      margin-top: 0.5rem;
+      display: block;
+      animation: fadeInHint 0.6s ease-in-out;
+    }
+    @keyframes fadeInHint {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .quiz-feedback {
+      padding: 0.75rem;
+      margin-top: 1rem;
+      border-radius: 6px;
+      font-weight: bold;
+      animation: fadeInFeedback 0.6s ease-in-out;
+    }
+    .quiz-feedback.correct {
+      background-color: #e6ffed;
+      color: #207544;
+      border: 1px solid #b5e2c5;
+    }
+    .quiz-feedback.incorrect {
+      background-color: #ffeaea;
+      color: #b22222;
+      border: 1px solid #e2b5b5;
+    }
+    @keyframes fadeInFeedback {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <h1>🔐 Hash Guessing Game</h1>
+
+  <div class="section" id="categorySelect">
+    <label for="category">Choose a category:</label>
+    <select id="category">
+      <option value="drinks">Drinks (Easy)</option>
+      <option value="animals">Animals (Medium)</option>
+      <option value="tech">Tech Terms (Hard)</option>
+    </select>
+    <button id="startGameBtn">Start Game</button>
+  </div>
+
+  <div class="section hidden" id="lesson">
+    <h2>🎓 What Is Hashing? (Quick Crash Course)</h2>
+    <ol>
+      <li>A hash is like a fingerprint for data. It turns any input into a unique string.</li>
+      <li>The same input always gives the same hash. For example:
+        <code>"banana" → b9bc5a11f18c0d63f6d9d30d5e00fcb58a91a0b1fbd2f3441dc8e4edcd7a1637</code>
+      </li>
+      <li>Even a small change = completely different hash:
+        <code>"Banana" → 7c5507a22e37c423f5b2d4d69ae857aad8fa1e75be3e2dc7b54f77f0252fefb0</code>
+      </li>
+      <li>Hashes are one-way. You can go from a word to a hash, but not backward.</li>
+      <li>Blockchains use hashing to protect data — changing data changes the hash!</li>
+    </ol>
+    <button id="showGameBtn">Continue</button>
+  </div>
+
+  <div class="section hidden" id="game">
+    <h2>🧩 Guess the Word</h2>
+    <p>The SHA-256 hash of the secret word is:</p>
+    <code id="hashDisplay"></code>
+    <p><strong>Clue:</strong> <span id="clue" class="clue-hints"></span></p>
+    <input type="text" id="guessInput" placeholder="Enter your guess" />
+    <button id="submitGuessBtn">Submit Guess</button>
+    <div id="result"></div>
+    <div id="nextStep" class="hidden">
+      <button id="goToQuizBtn">Go to Quiz</button>
+    </div>
+    <p id="score">Score: 0 | Streak: 0</p>
+  </div>
+
+  <div class="section hidden" id="quiz">
+    <h2>🎓 Quick Quiz!</h2>
+    <p>Why are hashes useful in blockchain?</p>
+    <div class="quiz-option" data-answer="A">A. To make data easier to read</div>
+    <div class="quiz-option" data-answer="B">B. To reverse-engineer original data</div>
+    <div class="quiz-option" data-answer="C">C. To verify that no one has changed the data</div>
+    <div class="quiz-option" data-answer="D">D. To compress large files</div>
+    <div id="quizResult"></div>
+    <button id="playAgainBtn">Play Again</button>
+    <button id="exitGameBtn">Exit</button>
+  </div>
+
+  <audio id="correctSound" src="https://actions.google.com/sounds/v1/cartoon/slide_whistle.ogg"></audio>
+  <audio id="wrongSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
+  <audio id="quizCorrectSound" src="https://actions.google.com/sounds/v1/cartoon/slide_whistle.ogg"></audio>
+  <audio id="quizWrongSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+
+  <script>
+  const wordCategories = {
+    drinks: ["water", "juice", "latte", "cider", "mocha", "tonic", "shake", "pepsi", "lager"],
+    animals: ["tiger", "zebra", "koala", "lemur", "panda", "eagle", "horse", "rhino", "llama"],
+    tech: ["block", "token", "bytes", "cache", "modem", "mouse", "chips", "proxy", "cloud"]
+  };
+
+  let wordList = [];
+  let categoryLabel = '';
+  let secretWord = "";
+  let targetHash = "";
+  let attempts = 0;
+  let score = 0;
+  let streak = 0;
+
+  async function hashString(str) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(str);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  function startGame() {
+    const category = document.getElementById("category").value;
+    categoryLabel = category.charAt(0).toUpperCase() + category.slice(1);
+    wordList = wordCategories[category];
+    secretWord = wordList[Math.floor(Math.random() * wordList.length)];
+    document.getElementById("categorySelect").classList.add("hidden");
+    document.getElementById("lesson").classList.remove("hidden");
+  }
+
+  async function showGame() {
+    document.getElementById("lesson").classList.add("hidden");
+    document.getElementById("game").classList.remove("hidden");
+    targetHash = await hashString(secretWord);
+    document.getElementById("hashDisplay").textContent = targetHash;
+    document.getElementById("clue").innerHTML = `It's a ${categoryLabel.toLowerCase().slice(0, -1)}, a ${secretWord.length}-letter word, lowercase only.`;
+  }
+
+  async function checkGuess() {
+    const guess = document.getElementById("guessInput").value.toLowerCase();
+    const guessedHash = await hashString(guess);
+    const resultDiv = document.getElementById("result");
+    const clue = document.getElementById("clue");
+
+    if (guess === secretWord) {
+      const sound = document.getElementById("correctSound");
+      sound.pause(); sound.currentTime = 0; sound.play();
+      score++;
+      streak++;
+      resultDiv.innerHTML = `<div class='quiz-feedback correct fade-in'>✅ Correct! "${guess}" matches the secret word!<br/><span style='display: block; margin-top: 0.5rem; font-family: monospace;'>Hash: <mark style='background-color: #d6f5e6; color: #207544;'>${guessedHash}</mark></span><br/>It matches the original hash.</div>`;
+      document.getElementById("nextStep").classList.remove("hidden");
+    } else {
+      const sound = document.getElementById("wrongSound");
+      sound.pause(); sound.currentTime = 0; sound.play();
+      streak = 0;
+      attempts++;
+      let hints = [
+        `The word starts with '${secretWord.charAt(0)}'.`,
+        `The second letter is '${secretWord.charAt(1)}'.`,
+        `The word ends with '${secretWord.charAt(secretWord.length - 1)}'.`,
+        secretWord.length > 3 ? `The third letter is '${secretWord.charAt(2)}'.` : '',
+        secretWord.length > 4 ? `The fourth letter is '${secretWord.charAt(3)}'.` : '',
+        secretWord.length > 5 ? `The fifth letter is '${secretWord.charAt(4)}'.` : ''
+      ].filter(Boolean);
+
+      let newHint = attempts - 1 < hints.length ? hints[attempts - 1] : `Try rearranging your thoughts! 😉`;
+      clue.innerHTML += `<div class='hint-highlight'>Hint ${attempts}: ${newHint}</div>`;
+      resultDiv.innerHTML = `<div class='quiz-feedback incorrect fade-in'>❌ Nope. You entered: "${guess}"<br/>
+<pre style='margin-top: 0.5rem; font-family: monospace;'>Your Hash:     <mark style='background-color: #ffd6d6; color: #b22222;'>${guessedHash}</mark>
+Expected Hash: <mark style='background-color: #eee0e0; color: #333;'>${targetHash}</mark></pre>
+</div>`;
+    }
+    document.getElementById("score").textContent = `Score: ${score} | Streak: ${streak}`;
+  }
+
+  function goToQuiz() {
+    const quizElement = document.getElementById("quiz");
+    const questionElement = document.querySelector("#quiz h2 + p");
+    const result = document.getElementById("quizResult");
+
+    const questions = [
+      {
+        question: "Why are hashes useful in blockchain?",
+        options: [
+          { text: "To make data easier to read", value: "A" },
+          { text: "To reverse-engineer original data", value: "B" },
+          { text: "To verify that no one has changed the data", value: "C" },
+          { text: "To compress large files", value: "D" }
+        ],
+        correct: "C"
+      },
+      {
+        question: "What happens to the hash if the input changes slightly?",
+        options: [
+          { text: "It changes slightly", value: "A" },
+          { text: "It stays the same", value: "B" },
+          { text: "It changes completely", value: "C" },
+          { text: "It becomes unreadable", value: "D" }
+        ],
+        correct: "C"
+      }
+    ];
+
+    const selected = questions[Math.floor(Math.random() * questions.length)];
+    const shuffled = selected.options.sort(() => 0.5 - Math.random());
+
+    questionElement.textContent = selected.question;
+    result.innerHTML = "";
+    document.querySelectorAll(".quiz-option").forEach((el, index) => {
+      el.textContent = `${shuffled[index].value}. ${shuffled[index].text}`;
+      el.dataset.answer = shuffled[index].value;
+      el.onclick = () => checkQuiz(shuffled[index].value, selected.correct);
+    });
+
+    document.getElementById("game").classList.add("hidden");
+    quizElement.classList.remove("hidden");
+  }
+
+  function checkQuiz(answer, correctAnswer) {
+    const result = document.getElementById("quizResult");
+    const correct = answer === correctAnswer;
+    const sound = document.getElementById(correct ? "quizCorrectSound" : "quizWrongSound");
+    sound.pause(); sound.currentTime = 0; sound.play();
+
+    if (correct) {
+      result.innerHTML = '<div class="quiz-feedback correct">✅ Correct!</div>';
+    } else {
+      result.innerHTML = '<div class="quiz-feedback incorrect">❌ Try again.</div>';
+    }
+  }
+
+  function restartGame() {
+    window.location.reload();
+  }
+
+  function exitGame() {
+    document.body.innerHTML = '<div class="section"><h2>👋 Thanks for playing!</h2><p>See you next time!</p></div>';
+  }
+
+  document.getElementById("startGameBtn").onclick = startGame;
+  document.getElementById("showGameBtn").onclick = showGame;
+  document.getElementById("submitGuessBtn").onclick = checkGuess;
+  document.getElementById("goToQuizBtn").onclick = goToQuiz;
+  document.getElementById("playAgainBtn").onclick = restartGame;
+  document.getElementById("exitGameBtn").onclick = exitGame;
+  document.getElementById("guessInput").addEventListener("keypress", function (event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      checkGuess();
+    }
+  });
+</script>
+</body>
+</html>
