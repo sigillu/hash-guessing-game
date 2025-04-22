@@ -301,7 +301,7 @@ Expected Hash: <mark style='background-color: #eee0e0; color: #333;'>${targetHas
           if (scorePercent < 66) {
             result.innerHTML += `<p>❌ You need at least 66% to pass.</p><button onclick='goToQuiz()'>Try Quiz Again</button>`;
           }
-          result.innerHTML += `<button onclick='restartGame()'>Play Again</button><button onclick='exitGame()'>Exit</button>`;
+          result.innerHTML += `<button onclick='showSummary()'>Next</button>`;
           return;
         }
 
@@ -364,6 +364,7 @@ Expected Hash: <mark style='background-color: #eee0e0; color: #333;'>${targetHas
       window.checkQuiz = checkQuiz;
       window.restartGame = restartGame;
       window.exitGame = exitGame;
+      window.showSummary = showSummary;
 
       document.getElementById("game").classList.add("hidden");
       quizElement.classList.remove("hidden");
@@ -376,6 +377,11 @@ Expected Hash: <mark style='background-color: #eee0e0; color: #333;'>${targetHas
 
     function restartGame() {
       window.location.reload();
+    }
+
+    function showSummary() {
+      document.getElementById("quiz").classList.add("hidden");
+      document.getElementById("summary").classList.remove("hidden");
     }
 
     function exitGame() {
@@ -393,5 +399,26 @@ Expected Hash: <mark style='background-color: #eee0e0; color: #333;'>${targetHas
       }
     });
   </script>
+<div class="section hidden" id="summary">
+    <h2>✅ Summary & Conclusion</h2>
+    <p>Congratulations! You've just completed the Hash Guessing Game — and learned an important concept in the world of cryptography and blockchain.</p>
+
+    <h3>🔐 What is a hash?</h3>
+    <p>A <strong>hash</strong> is a special kind of digital fingerprint. It takes any input — like a word or a file — and transforms it into a unique string of characters. If you change even a single letter, the resulting hash changes completely. This process is <strong>one-way</strong>, meaning there's no way to go backward and figure out what the original input was just by looking at the hash.</p>
+
+    <h3>🎯 What did this game teach you?</h3>
+    <p>By giving you the hash of a secret word, the game challenged you to find the original word. But since hashes can't be reversed, your only strategy was to guess possible words, hash them, and compare the results. When a guess matched the target hash, you knew you'd found the original word.</p>
+    <p>This hands-on experience illustrates a core principle of hashing: <strong>you can verify a match, but you can't work backward to reveal the secret</strong>.</p>
+
+    <h3>🔍 Where are hashes used in real life?</h3>
+    <ul>
+      <li><strong>Crypto Mining (Proof of Work):</strong> In blockchains like Bitcoin, miners guess different values (nonces) to find a hash that meets specific rules. It’s all about trial and error — just like this game.</li>
+      <li><strong>Password Storage:</strong> Websites don’t store your actual password. They store its hash. When you log in, the system hashes your input and checks it against the stored hash. That way, even if the database is compromised, your real password stays safe.</li>
+    </ul>
+
+    <p>Would you like to:</p>
+    <button onclick="restartGame()">🔁 Play Again</button>
+    <button onclick="exitGame()">❌ Exit the Game</button>
+  </div>
 </body>
 </html>
