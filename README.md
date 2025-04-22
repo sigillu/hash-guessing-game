@@ -27,6 +27,7 @@ You can also host it live using GitHub Pages, Netlify, or any static site host.
 ## 🌐 Live Demo
 [🔗 Click here to play the game](https://sigillu.github.io/hash-guessing-game/)
 
+
 ## 📄 License
 This project is licensed under the **MIT License** — meaning:
 
