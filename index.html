@@ -215,7 +215,7 @@
         // document.getElementById("correctSound").play();
         score++;
         streak++;
-        resultDiv.innerHTML = `<div class='quiz-feedback correct fade-in'>✅ Correct! "${guess}" matches the secret word!<br/><span style='display: block; margin-top: 0.5rem; font-family: monospace;'>Hash: <mark style='background-color: #d6f5e6; color: #207544;'>${guessedHash}</mark></span><br/>It matches the original hash.</div>`;
+        resultDiv.innerHTML = `<div class='quiz-feedback correct fade-in'>✅ Correct! "${guess}" matches the secret word!<br/><span style='display: block; margin-top: 0.5rem; font-family: monospace;'>Hash: <mark style='background-color: #d6f5e6; color: #207544;'>${guessedHash}</mark></span><br/>It matches the original hash. Hashes are one-way: you can calculate a hash from a word, but not the other way around. The only way to discover the word is by guessing and comparing.</div>`;
         document.getElementById("nextStep").classList.remove("hidden");
       } else {
         // document.getElementById("wrongSound").play();
