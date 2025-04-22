@@ -160,8 +160,27 @@
     <div id="quizResult"></div>
   </div>
 
-  
+  <div class="section hidden" id="summary">
+    <h2>✅ Summary & Conclusion</h2>
+    <p>Congratulations! You've just completed the Hash Guessing Game — and learned an important concept in the world of cryptography and blockchain.</p>
 
+    <h3>🔐 What is a hash?</h3>
+    <p>A <strong>hash</strong> is a special kind of digital fingerprint. It takes any input — like a word or a file — and transforms it into a unique string of characters. If you change even a single letter, the resulting hash changes completely. This process is <strong>one-way</strong>, meaning there's no way to go backward and figure out what the original input was just by looking at the hash.</p>
+
+    <h3>🎯 What did this game teach you?</h3>
+    <p>By giving you the hash of a secret word, the game challenged you to find the original word. But since hashes can't be reversed, your only strategy was to guess possible words, hash them, and compare the results. When a guess matched the target hash, you knew you'd found the original word.</p>
+    <p>This hands-on experience illustrates a core principle of hashing: <strong>you can verify a match, but you can't work backward to reveal the secret</strong>.</p>
+
+    <h3>🔍 Where are hashes used in real life?</h3>
+    <ul>
+      <li><strong>Crypto Mining (Proof of Work):</strong> In blockchains like Bitcoin, miners guess different values (nonces) to find a hash that meets specific rules. It’s all about trial and error — just like this game.</li>
+      <br>
+      <li><strong>Password Storage:</strong> Websites don’t store your actual password. They store its hash. When you log in, the system hashes your input and checks it against the stored hash. That way, even if the database is compromised, your real password stays safe.</li>
+    </ul>
+
+        <button onclick="restartGame()">🔁 Play Again</button>
+    <button onclick="exitGame()">❌ Exit the Game</button>
+  </div>
   <script>
     const wordCategories = {
       drinks: ["water", "juice", "latte", "cider", "mocha", "tonic", "shake", "pepsi", "lager"],
@@ -176,6 +195,7 @@
     let attempts = 0;
     let score = 0;
     let streak = 0;
+
 
     async function hashString(str) {
       const encoder = new TextEncoder();
@@ -212,13 +232,11 @@
       const clue = document.getElementById("clue");
 
       if (guess === secretWord) {
-        // document.getElementById("correctSound").play();
         score++;
         streak++;
         resultDiv.innerHTML = `<div class='quiz-feedback correct fade-in'>✅ Correct! "${guess}" matches the secret word!<br/><span style='display: block; margin-top: 0.5rem; font-family: monospace;'>Hash: <mark style='background-color: #d6f5e6; color: #207544;'>${guessedHash}</mark></span><br/>It matches the original hash. Hashes are one-way: you can calculate a hash from a word, but not the other way around. The only way to discover the word is by guessing and comparing.</div>`;
         document.getElementById("nextStep").classList.remove("hidden");
       } else {
-        // document.getElementById("wrongSound").play();
         streak = 0;
         attempts++;
         let hints = [
@@ -240,17 +258,26 @@ Expected Hash: <mark style='background-color: #eee0e0; color: #333;'>${targetHas
       document.getElementById("score").textContent = `Score: ${score} | Streak: ${streak}`;
     }
 
-    let quizIndex = 0;
-    let correctAnswers = 0;
-    const totalQuestions = 4;
-
     function goToQuiz() {
-      const quizElement = document.getElementById("quiz");
-      const questionElement = document.getElementById("quizQuestion");
-      const optionsContainer = document.getElementById("quizOptions");
-      const result = document.getElementById("quizResult");
-      const progress = document.getElementById("quizProgress");
+      document.getElementById("game").classList.add("hidden");
+      document.getElementById("quiz").classList.remove("hidden");
+      startQuiz();
+    }
 
+    function showSummary() {
+      document.getElementById("quiz").classList.add("hidden");
+      document.getElementById("summary").classList.remove("hidden");
+    }
+
+    function restartGame() {
+      window.location.reload();
+    }
+
+    function exitGame() {
+      document.body.innerHTML = '<div class="section"><h2>👋 Thanks for playing!</h2><p>See you next time!</p></div>';
+    }
+
+    function startQuiz() {
       const quizData = [
         {
           question: "Why are hashes useful in blockchain?",
@@ -294,49 +321,55 @@ Expected Hash: <mark style='background-color: #eee0e0; color: #333;'>${targetHas
         }
       ];
 
+      let quizIndex = 0;
+      let correctAnswers = 0;
+      const questionElement = document.getElementById("quizQuestion");
+      const optionsContainer = document.getElementById("quizOptions");
+      const result = document.getElementById("quizResult");
+      const progress = document.getElementById("quizProgress");
+
       function showNextQuestion() {
-        if (quizIndex >= totalQuestions) {
-          const scorePercent = Math.round((correctAnswers / totalQuestions) * 100);
+        if (quizIndex >= quizData.length) {
+          const scorePercent = Math.round((correctAnswers / quizData.length) * 100);
           result.innerHTML = `<div class='quiz-feedback ${scorePercent >= 66 ? "correct" : "incorrect"}'>You scored ${scorePercent}%.</div>`;
           if (scorePercent < 66) {
-            result.innerHTML += `<p>❌ You need at least 66% to pass.</p><button onclick='goToQuiz()'>Try Quiz Again</button>`;
+            result.innerHTML += `<p>❌ You need at least 66% to pass.</p><button onclick='startQuiz()'>Try Quiz Again</button>`;
           }
           result.innerHTML += `<button onclick='showSummary()'>Next</button>`;
           return;
         }
 
         const current = quizData[quizIndex];
-        const sorted = current.options.sort((a, b) => a.value.localeCompare(b.value));
         questionElement.textContent = current.question;
         optionsContainer.innerHTML = "";
         result.innerHTML = "";
 
-        sorted.forEach(option => {
+        current.options.sort((a, b) => a.value.localeCompare(b.value)).forEach(option => {
           const div = document.createElement("div");
           div.className = "quiz-option";
           div.textContent = `${option.value}. ${option.text}`;
           div.onclick = () => {
             const allOptions = optionsContainer.querySelectorAll('.quiz-option');
             allOptions.forEach(opt => opt.style.pointerEvents = 'none');
-
             const isCorrect = option.value === current.correct;
             if (isCorrect) {
               div.style.backgroundColor = '#d1e7dd';
               div.style.borderColor = '#badbcc';
               div.style.color = '#0f5132';
+              correctAnswers++;
             } else {
               div.style.backgroundColor = '#f8d7da';
               div.style.borderColor = '#f5c2c7';
               div.style.color = '#842029';
             }
-
-            checkQuiz(option.value, current.correct);
-
+            quizIndex++;
+            const scorePercent = Math.round((correctAnswers / quizData.length) * 100);
+            progress.style.width = `${(correctAnswers / quizData.length) * 100}%`;
+            progress.textContent = `${scorePercent}%`;
             const nextBtn = document.createElement("button");
             nextBtn.textContent = "Next";
             nextBtn.onclick = showNextQuestion;
             result.appendChild(nextBtn);
-
             const prompt = document.createElement("p");
             prompt.textContent = 'Click Next to continue.';
             prompt.style.fontStyle = 'italic';
@@ -347,45 +380,11 @@ Expected Hash: <mark style='background-color: #eee0e0; color: #333;'>${targetHas
         });
       }
 
-      function checkQuiz(answer, correctAnswer) {
-        const result = document.getElementById("quizResult");
-        const progress = document.getElementById("quizProgress");
-        const correct = answer === correctAnswer;
-        // Sound removed by user request
-
-        if (correct) correctAnswers++;
-        quizIndex++;
-
-        const scorePercent = Math.round((correctAnswers / totalQuestions) * 100);
-        progress.style.width = `${(correctAnswers / totalQuestions) * 100}%`;
-        progress.textContent = `${scorePercent}%`;
-      }
-
-      window.checkQuiz = checkQuiz;
-      window.restartGame = restartGame;
-      window.exitGame = exitGame;
-      window.showSummary = showSummary;
-
-      document.getElementById("game").classList.add("hidden");
-      quizElement.classList.remove("hidden");
       quizIndex = 0;
       correctAnswers = 0;
       progress.style.width = "0%";
       progress.textContent = "0%";
       showNextQuestion();
-    }
-
-    function restartGame() {
-      window.location.reload();
-    }
-
-    function showSummary() {
-      document.getElementById("quiz").classList.add("hidden");
-      document.getElementById("summary").classList.remove("hidden");
-    }
-
-    function exitGame() {
-      document.body.innerHTML = '<div class="section"><h2>👋 Thanks for playing!</h2><p>See you next time!</p></div>';
     }
 
     document.getElementById("startGameBtn").onclick = startGame;
@@ -398,27 +397,6 @@ Expected Hash: <mark style='background-color: #eee0e0; color: #333;'>${targetHas
         checkGuess();
       }
     });
-  </script>
-<div class="section hidden" id="summary">
-    <h2>✅ Summary & Conclusion</h2>
-    <p>Congratulations! You've just completed the Hash Guessing Game — and learned an important concept in the world of cryptography and blockchain.</p>
-
-    <h3>🔐 What is a hash?</h3>
-    <p>A <strong>hash</strong> is a special kind of digital fingerprint. It takes any input — like a word or a file — and transforms it into a unique string of characters. If you change even a single letter, the resulting hash changes completely. This process is <strong>one-way</strong>, meaning there's no way to go backward and figure out what the original input was just by looking at the hash.</p>
-
-    <h3>🎯 What did this game teach you?</h3>
-    <p>By giving you the hash of a secret word, the game challenged you to find the original word. But since hashes can't be reversed, your only strategy was to guess possible words, hash them, and compare the results. When a guess matched the target hash, you knew you'd found the original word.</p>
-    <p>This hands-on experience illustrates a core principle of hashing: <strong>you can verify a match, but you can't work backward to reveal the secret</strong>.</p>
-
-    <h3>🔍 Where are hashes used in real life?</h3>
-    <ul>
-      <li><strong>Crypto Mining (Proof of Work):</strong> In blockchains like Bitcoin, miners guess different values (nonces) to find a hash that meets specific rules. It’s all about trial and error — just like this game.</li>
-      <li><strong>Password Storage:</strong> Websites don’t store your actual password. They store its hash. When you log in, the system hashes your input and checks it against the stored hash. That way, even if the database is compromised, your real password stays safe.</li>
-    </ul>
-
-    <p>Would you like to:</p>
-    <button onclick="restartGame()">🔁 Play Again</button>
-    <button onclick="exitGame()">❌ Exit the Game</button>
-  </div>
+</script>
 </body>
 </html>
