@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hash Guessing Game</title>
   <style>
     body {
@@ -140,7 +140,7 @@
     <p>The SHA-256 hash of the secret word is:</p>
     <code id="hashDisplay"></code>
     <p><strong>Clue:</strong> <span id="clue" class="clue-hints"></span></p>
-    <input type="text" id="guessInput" placeholder="Enter your guess" />
+    <input type="text" id="guessInput" placeholder="Enter your guess" style="text-transform: lowercase;" />
     <button id="submitGuessBtn">Submit Guess</button>
     <div id="result"></div>
     <div id="nextStep" class="hidden">
@@ -151,14 +151,13 @@
 
   <div class="section hidden" id="quiz">
     <h2>🎓 Quick Quiz!</h2>
-    <p>Why are hashes useful in blockchain?</p>
-    <div class="quiz-option" data-answer="A">A. To make data easier to read</div>
-    <div class="quiz-option" data-answer="B">B. To reverse-engineer original data</div>
-    <div class="quiz-option" data-answer="C">C. To verify that no one has changed the data</div>
-    <div class="quiz-option" data-answer="D">D. To compress large files</div>
+    <p style="font-style: italic; color: #555;">You need at least 66% to pass the quiz.</p>
+    <p id="quizQuestion">Why are hashes useful in blockchain?</p>
+    <div id="quizOptions"></div>
+    <div id="quizProgressBar" style="margin-top: 1rem; height: 20px; background-color: #e0e0e0; border-radius: 10px; overflow: hidden;">
+      <div id="quizProgress" style="height: 100%; width: 0%; background-color: #4caf50; text-align: center; color: white; line-height: 20px; font-size: 0.8rem;"></div>
+    </div>
     <div id="quizResult"></div>
-    <button id="playAgainBtn">Play Again</button>
-    <button id="exitGameBtn">Exit</button>
   </div>
 
   <audio id="correctSound" src="https://actions.google.com/sounds/v1/cartoon/slide_whistle.ogg"></audio>
@@ -167,158 +166,236 @@
   <audio id="quizWrongSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
 
   <script>
-  const wordCategories = {
-    drinks: ["water", "juice", "latte", "cider", "mocha", "tonic", "shake", "pepsi", "lager"],
-    animals: ["tiger", "zebra", "koala", "lemur", "panda", "eagle", "horse", "rhino", "llama"],
-    tech: ["block", "token", "bytes", "cache", "modem", "mouse", "chips", "proxy", "cloud"]
-  };
+    const wordCategories = {
+      drinks: ["water", "juice", "latte", "cider", "mocha", "tonic", "shake", "pepsi", "lager"],
+      animals: ["tiger", "zebra", "koala", "lemur", "panda", "eagle", "horse", "rhino", "llama"],
+      tech: ["block", "token", "bytes", "cache", "modem", "mouse", "chips", "proxy", "cloud"]
+    };
 
-  let wordList = [];
-  let categoryLabel = '';
-  let secretWord = "";
-  let targetHash = "";
-  let attempts = 0;
-  let score = 0;
-  let streak = 0;
+    let wordList = [];
+    let categoryLabel = '';
+    let secretWord = "";
+    let targetHash = "";
+    let attempts = 0;
+    let score = 0;
+    let streak = 0;
 
-  async function hashString(str) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(str);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
-  }
+    async function hashString(str) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(str);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    }
 
-  function startGame() {
-    const category = document.getElementById("category").value;
-    categoryLabel = category.charAt(0).toUpperCase() + category.slice(1);
-    wordList = wordCategories[category];
-    secretWord = wordList[Math.floor(Math.random() * wordList.length)];
-    document.getElementById("categorySelect").classList.add("hidden");
-    document.getElementById("lesson").classList.remove("hidden");
-  }
+    function startGame() {
+      const category = document.getElementById("category").value;
+      categoryLabel = category.charAt(0).toUpperCase() + category.slice(1);
+      wordList = wordCategories[category];
+      secretWord = wordList[Math.floor(Math.random() * wordList.length)];
+      document.getElementById("categorySelect").classList.add("hidden");
+      document.getElementById("lesson").classList.remove("hidden");
+    }
 
-  async function showGame() {
-    document.getElementById("lesson").classList.add("hidden");
-    document.getElementById("game").classList.remove("hidden");
-    targetHash = await hashString(secretWord);
-    document.getElementById("hashDisplay").textContent = targetHash;
-    document.getElementById("clue").innerHTML = `It's a ${categoryLabel.toLowerCase().slice(0, -1)}, a ${secretWord.length}-letter word, lowercase only.`;
-  }
+    async function showGame() {
+      document.getElementById("lesson").classList.add("hidden");
+      document.getElementById("game").classList.remove("hidden");
+      targetHash = await hashString(secretWord);
+      document.getElementById("hashDisplay").textContent = targetHash;
+      document.getElementById("clue").innerHTML = `It's a ${categoryLabel.toLowerCase().slice(0, -1)}, a ${secretWord.length}-letter word, lowercase only.`;
+    }
 
-  async function checkGuess() {
-    const guess = document.getElementById("guessInput").value.toLowerCase();
-    const guessedHash = await hashString(guess);
-    const resultDiv = document.getElementById("result");
-    const clue = document.getElementById("clue");
+    async function checkGuess() {
+      const input = document.getElementById("guessInput");
+      input.value = input.value.toLowerCase();
+      const guess = input.value;
+      input.value = "";
+      const guessedHash = await hashString(guess);
+      const resultDiv = document.getElementById("result");
+      const clue = document.getElementById("clue");
 
-    if (guess === secretWord) {
-      const sound = document.getElementById("correctSound");
-      sound.pause(); sound.currentTime = 0; sound.play();
-      score++;
-      streak++;
-      resultDiv.innerHTML = `<div class='quiz-feedback correct fade-in'>✅ Correct! "${guess}" matches the secret word!<br/><span style='display: block; margin-top: 0.5rem; font-family: monospace;'>Hash: <mark style='background-color: #d6f5e6; color: #207544;'>${guessedHash}</mark></span><br/>It matches the original hash.</div>`;
-      document.getElementById("nextStep").classList.remove("hidden");
-    } else {
-      const sound = document.getElementById("wrongSound");
-      sound.pause(); sound.currentTime = 0; sound.play();
-      streak = 0;
-      attempts++;
-      let hints = [
-        `The word starts with '${secretWord.charAt(0)}'.`,
-        `The second letter is '${secretWord.charAt(1)}'.`,
-        `The word ends with '${secretWord.charAt(secretWord.length - 1)}'.`,
-        secretWord.length > 3 ? `The third letter is '${secretWord.charAt(2)}'.` : '',
-        secretWord.length > 4 ? `The fourth letter is '${secretWord.charAt(3)}'.` : '',
-        secretWord.length > 5 ? `The fifth letter is '${secretWord.charAt(4)}'.` : ''
-      ].filter(Boolean);
+      if (guess === secretWord) {
+        document.getElementById("correctSound").play();
+        score++;
+        streak++;
+        resultDiv.innerHTML = `<div class='quiz-feedback correct fade-in'>✅ Correct! "${guess}" matches the secret word!<br/><span style='display: block; margin-top: 0.5rem; font-family: monospace;'>Hash: <mark style='background-color: #d6f5e6; color: #207544;'>${guessedHash}</mark></span><br/>It matches the original hash.</div>`;
+        document.getElementById("nextStep").classList.remove("hidden");
+      } else {
+        document.getElementById("wrongSound").play();
+        streak = 0;
+        attempts++;
+        let hints = [
+          `The word starts with '${secretWord.charAt(0)}'.`,
+          `The second letter is '${secretWord.charAt(1)}'.`,
+          `The word ends with '${secretWord.charAt(secretWord.length - 1)}'.`,
+          secretWord.length > 3 ? `The third letter is '${secretWord.charAt(2)}'.` : '',
+          secretWord.length > 4 ? `The fourth letter is '${secretWord.charAt(3)}'.` : '',
+          secretWord.length > 5 ? `The fifth letter is '${secretWord.charAt(4)}'.` : ''
+        ].filter(Boolean);
 
-      let newHint = attempts - 1 < hints.length ? hints[attempts - 1] : `Try rearranging your thoughts! 😉`;
-      clue.innerHTML += `<div class='hint-highlight'>Hint ${attempts}: ${newHint}</div>`;
-      resultDiv.innerHTML = `<div class='quiz-feedback incorrect fade-in'>❌ Nope. You entered: "${guess}"<br/>
+        let newHint = attempts - 1 < hints.length ? hints[attempts - 1] : `Try rearranging your thoughts! 😉`;
+        clue.innerHTML += `<div class='hint-highlight'>Hint ${attempts}: ${newHint}</div>`;
+        resultDiv.innerHTML = `<div class='quiz-feedback incorrect fade-in'>❌ Nope. You entered: "${guess}"<br/>
 <pre style='margin-top: 0.5rem; font-family: monospace;'>Your Hash:     <mark style='background-color: #ffd6d6; color: #b22222;'>${guessedHash}</mark>
 Expected Hash: <mark style='background-color: #eee0e0; color: #333;'>${targetHash}</mark></pre>
 </div>`;
-    }
-    document.getElementById("score").textContent = `Score: ${score} | Streak: ${streak}`;
-  }
-
-  function goToQuiz() {
-    const quizElement = document.getElementById("quiz");
-    const questionElement = document.querySelector("#quiz h2 + p");
-    const result = document.getElementById("quizResult");
-
-    const questions = [
-      {
-        question: "Why are hashes useful in blockchain?",
-        options: [
-          { text: "To make data easier to read", value: "A" },
-          { text: "To reverse-engineer original data", value: "B" },
-          { text: "To verify that no one has changed the data", value: "C" },
-          { text: "To compress large files", value: "D" }
-        ],
-        correct: "C"
-      },
-      {
-        question: "What happens to the hash if the input changes slightly?",
-        options: [
-          { text: "It changes slightly", value: "A" },
-          { text: "It stays the same", value: "B" },
-          { text: "It changes completely", value: "C" },
-          { text: "It becomes unreadable", value: "D" }
-        ],
-        correct: "C"
       }
-    ];
+      document.getElementById("score").textContent = `Score: ${score} | Streak: ${streak}`;
+    }
 
-    const selected = questions[Math.floor(Math.random() * questions.length)];
-    const shuffled = selected.options.sort(() => 0.5 - Math.random());
+    let quizIndex = 0;
+    let correctAnswers = 0;
+    const totalQuestions = 4;
 
-    questionElement.textContent = selected.question;
-    result.innerHTML = "";
-    document.querySelectorAll(".quiz-option").forEach((el, index) => {
-      el.textContent = `${shuffled[index].value}. ${shuffled[index].text}`;
-      el.dataset.answer = shuffled[index].value;
-      el.onclick = () => checkQuiz(shuffled[index].value, selected.correct);
+    function goToQuiz() {
+      const quizElement = document.getElementById("quiz");
+      const questionElement = document.getElementById("quizQuestion");
+      const optionsContainer = document.getElementById("quizOptions");
+      const result = document.getElementById("quizResult");
+      const progress = document.getElementById("quizProgress");
+
+      const quizData = [
+        {
+          question: "Why are hashes useful in blockchain?",
+          options: [
+            { text: "To make data easier to read", value: "A" },
+            { text: "To reverse-engineer original data", value: "B" },
+            { text: "To verify that no one has changed the data", value: "C" },
+            { text: "To compress large files", value: "D" }
+          ],
+          correct: "C"
+        },
+        {
+          question: "What happens to the hash if the input changes slightly?",
+          options: [
+            { text: "It changes slightly", value: "A" },
+            { text: "It stays the same", value: "B" },
+            { text: "It changes completely", value: "C" },
+            { text: "It becomes unreadable", value: "D" }
+          ],
+          correct: "C"
+        },
+        {
+          question: "Which of the following best describes a cryptographic hash?",
+          options: [
+            { text: "It compresses a file to save space", value: "A" },
+            { text: "It encrypts data with a secret key", value: "B" },
+            { text: "It transforms input into a fixed-length, irreversible string", value: "C" },
+            { text: "It sorts data alphabetically", value: "D" }
+          ],
+          correct: "C"
+        },
+        {
+          question: "What is one-way functionality in hashing?",
+          options: [
+            { text: "You can recover the original input from the hash", value: "A" },
+            { text: "Once hashed, the input cannot be reversed", value: "B" },
+            { text: "Hashing is always random", value: "C" },
+            { text: "Hashing uses two inputs", value: "D" }
+          ],
+          correct: "B"
+        }
+      ];
+
+      function showNextQuestion() {
+        if (quizIndex >= totalQuestions) {
+          const scorePercent = Math.round((correctAnswers / totalQuestions) * 100);
+          result.innerHTML = `<div class='quiz-feedback ${scorePercent >= 66 ? "correct" : "incorrect"}'>You scored ${scorePercent}%.</div>`;
+          if (scorePercent < 66) {
+            result.innerHTML += `<p>❌ You need at least 66% to pass.</p><button onclick='goToQuiz()'>Try Quiz Again</button>`;
+          }
+          result.innerHTML += `<button onclick='restartGame()'>Play Again</button><button onclick='exitGame()'>Exit</button>`;
+          return;
+        }
+
+        const current = quizData[quizIndex];
+        const sorted = current.options.sort((a, b) => a.value.localeCompare(b.value));
+        questionElement.textContent = current.question;
+        optionsContainer.innerHTML = "";
+        result.innerHTML = "";
+
+        sorted.forEach(option => {
+          const div = document.createElement("div");
+          div.className = "quiz-option";
+          div.textContent = `${option.value}. ${option.text}`;
+          div.onclick = () => {
+            const allOptions = optionsContainer.querySelectorAll('.quiz-option');
+            allOptions.forEach(opt => opt.style.pointerEvents = 'none');
+
+            const isCorrect = option.value === current.correct;
+            if (isCorrect) {
+              div.style.backgroundColor = '#d1e7dd';
+              div.style.borderColor = '#badbcc';
+              div.style.color = '#0f5132';
+            } else {
+              div.style.backgroundColor = '#f8d7da';
+              div.style.borderColor = '#f5c2c7';
+              div.style.color = '#842029';
+            }
+
+            checkQuiz(option.value, current.correct);
+
+            const nextBtn = document.createElement("button");
+            nextBtn.textContent = "Next";
+            nextBtn.onclick = showNextQuestion;
+            result.appendChild(nextBtn);
+
+            const prompt = document.createElement("p");
+            prompt.textContent = 'Click Next to continue.';
+            prompt.style.fontStyle = 'italic';
+            prompt.style.marginTop = '0.5rem';
+            result.appendChild(prompt);
+          };
+          optionsContainer.appendChild(div);
+        });
+      }
+
+      function checkQuiz(answer, correctAnswer) {
+        const result = document.getElementById("quizResult");
+        const progress = document.getElementById("quizProgress");
+        const correct = answer === correctAnswer;
+        const sound = document.getElementById(correct ? "quizCorrectSound" : "quizWrongSound");
+        sound.pause(); sound.currentTime = 0; sound.play();
+
+        if (correct) correctAnswers++;
+        quizIndex++;
+
+        const scorePercent = Math.round((correctAnswers / totalQuestions) * 100);
+        progress.style.width = `${(correctAnswers / totalQuestions) * 100}%`;
+        progress.textContent = `${scorePercent}%`;
+      }
+
+      window.checkQuiz = checkQuiz;
+      window.restartGame = restartGame;
+      window.exitGame = exitGame;
+
+      document.getElementById("game").classList.add("hidden");
+      quizElement.classList.remove("hidden");
+      quizIndex = 0;
+      correctAnswers = 0;
+      progress.style.width = "0%";
+      progress.textContent = "0%";
+      showNextQuestion();
+    }
+
+    function restartGame() {
+      window.location.reload();
+    }
+
+    function exitGame() {
+      document.body.innerHTML = '<div class="section"><h2>👋 Thanks for playing!</h2><p>See you next time!</p></div>';
+    }
+
+    document.getElementById("startGameBtn").onclick = startGame;
+    document.getElementById("showGameBtn").onclick = showGame;
+    document.getElementById("submitGuessBtn").onclick = checkGuess;
+    document.getElementById("goToQuizBtn").onclick = goToQuiz;
+    document.getElementById("guessInput").addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        checkGuess();
+      }
     });
-
-    document.getElementById("game").classList.add("hidden");
-    quizElement.classList.remove("hidden");
-  }
-
-  function checkQuiz(answer, correctAnswer) {
-    const result = document.getElementById("quizResult");
-    const correct = answer === correctAnswer;
-    const sound = document.getElementById(correct ? "quizCorrectSound" : "quizWrongSound");
-    sound.pause(); sound.currentTime = 0; sound.play();
-
-    if (correct) {
-      result.innerHTML = '<div class="quiz-feedback correct">✅ Correct!</div>';
-    } else {
-      result.innerHTML = '<div class="quiz-feedback incorrect">❌ Try again.</div>';
-    }
-  }
-
-  function restartGame() {
-    window.location.reload();
-  }
-
-  function exitGame() {
-    document.body.innerHTML = '<div class="section"><h2>👋 Thanks for playing!</h2><p>See you next time!</p></div>';
-  }
-
-  document.getElementById("startGameBtn").onclick = startGame;
-  document.getElementById("showGameBtn").onclick = showGame;
-  document.getElementById("submitGuessBtn").onclick = checkGuess;
-  document.getElementById("goToQuizBtn").onclick = goToQuiz;
-  document.getElementById("playAgainBtn").onclick = restartGame;
-  document.getElementById("exitGameBtn").onclick = exitGame;
-  document.getElementById("guessInput").addEventListener("keypress", function (event) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      checkGuess();
-    }
-  });
-</script>
+  </script>
 </body>
 </html>
