@@ -37,6 +37,8 @@ This project is licensed under the **MIT License** — meaning:
 
 See the [LICENSE](LICENSE) file for details.
 
+Copyright (c) 2025
+Gold-Rep Corporation, all rights reserved.
 ---
 
 Made with 🧠 and ☕ to help people learn one hash at a time!
