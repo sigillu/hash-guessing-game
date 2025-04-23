@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hash Guessing Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      background-color: #ffffff;
+      color: #333;
+    }
+    .section {
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: #f9f9f9;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+    code {
+      background: #f0f0f0;
+      padding: 4px 6px;
+      border-radius: 4px;
+      display: block;
+      margin: 0.5rem 0;
+      font-family: monospace;
+      color: #333;
+    }
+    .hidden { display: none; }
+    button {
+      background-color: #007bff;
+      border: none;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 1rem;
+      margin-right: 0.5rem;
+    }
+    input[type="text"], select {
+      padding: 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      margin-right: 0.5rem;
+      min-width: 140px;
+      width: auto;
+    }
+    .quiz-option {
+      background-color: #f0f0f0;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin: 0.25rem 0;
+      cursor: pointer;
+    }
+    .quiz-option:hover {
+      background-color: #007bff;
+      color: #fff;
+    }
+    ol li {
+      margin-bottom: 1rem;
+    }
+    .fade-in {
+      animation: fadeIn 1s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .clue-hints {
+      margin-top: 1rem;
+      line-height: 1.6;
+    }
+    .hint-highlight {
+      background-color: #ffffcc;
+      padding: 0.25rem 0.5rem;
+      border-left: 4px solid #ffcc00;
+      margin-top: 0.5rem;
+      display: block;
+      animation: fadeInHint 0.6s ease-in-out;
+    }
+    @keyframes fadeInHint {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .quiz-feedback {
+      padding: 0.75rem;
+      margin-top: 1rem;
+      border-radius: 6px;
+      font-weight: bold;
+      animation: fadeInFeedback 0.6s ease-in-out;
+    }
+    .quiz-feedback.correct {
+      background-color: #e6ffed;
+      color: #207544;
+      border: 1px solid #b5e2c5;
+    }
+    .quiz-feedback.incorrect {
+      background-color: #ffeaea;
+      color: #b22222;
+      border: 1px solid #e2b5b5;
+    }
+    @keyframes fadeInFeedback {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+      @media (max-width: 600px) {
+      body {
+        margin: 1rem;
+        font-size: 16px;
+      }
+      h1, h2, h3 {
+        font-size: 1.2em;
+      }
+      .section {
+        padding: 1rem 0.75rem;
+      }
+      button, input, select {
+        width: 100%;
+        margin: 0.5rem 0;
+        font-size: 1rem;
+      }
+      .quiz-option {
+        font-size: 1rem;
+        padding: 0.75rem;
+      }
+      code {
+        word-break: break-word;
+      }
+    }
+      body.dark-mode {
+      background-color: #121212;
+      color: #f0f0f0;
+    }
+    body.dark-mode .section {
+      background-color: #1e1e1e;
+      border-color: #333;
+    }
+    body.dark-mode code {
+      background-color: #2c2c2c;
+      color: #e0e0e0;
+    }
+    body.dark-mode .quiz-option {
+      background-color: #2a2a2a;
+      border-color: #555;
+      color: #f0f0f0;
+    }
+    body.dark-mode .quiz-option:hover {
+      background-color: #444;
+      color: #fff;
+    }
+    body.dark-mode button {
+      background-color: #444;
+      color: #fff;
+    }
+    body.dark-mode input,
+    body.dark-mode select {
+      background-color: #2c2c2c;
+      color: #f0f0f0;
+      border-color: #555;
+    }
+    body.dark-mode .hint-highlight {
+      background-color: #444444;
+      color: #ffff66;
+      border-left: 4px solid #ffcc00;
+    }
+    }
+  </style>
+</head>
+<body>
+  <button onclick="toggleDarkMode()" style="display: block; margin: 1rem auto; min-width: 140px; text-align: center;">🌗 Toggle Dark Mode</button>
+  <h1>🔐 Hash Guessing Game</h1>
+
+  <div class="section" id="categorySelect">
+    <label for="category">Choose a category:</label>
+    <select id="category">
+      <option value="drinks">Drinks (Easy)</option>
+      <option value="animals">Animals (Medium)</option>
+      <option value="tech">Tech Terms (Hard)</option>
+    </select>
+    <button id="startGameBtn">Start Game</button>
+  </div>
+
+  <div class="section hidden" id="lesson">
+    <h2>🎓 What Is Hashing? (Quick Crash Course)</h2>
+    <ol>
+      <li>A hash is like a fingerprint for data. It turns any input into a unique string.</li>
+      <li>The same input always gives the same hash. For example:
+        <code>"banana" → b9bc5a11f18c0d63f6d9d30d5e00fcb58a91a0b1fbd2f3441dc8e4edcd7a1637</code>
+      </li>
+      <li>Even a small change = completely different hash:
+        <code>"Banana" → 7c5507a22e37c423f5b2d4d69ae857aad8fa1e75be3e2dc7b54f77f0252fefb0</code>
+      </li>
+      <li>Hashes are one-way. You can go from a word to a hash, but not backward.</li>
+      <li>Blockchains use hashing to protect data — changing data changes the hash!</li>
+    </ol>
+    <button id="showGameBtn">Continue</button>
+  </div>
+
+  <div class="section hidden" id="game">
+    <h2>🧩 Guess the Word</h2>
+    <p>The SHA-256 hash of the secret word is:</p>
+    <code id="hashDisplay"></code>
+    <p><strong>Clue:</strong> <span id="clue" class="clue-hints"></span></p>
+    <input type="text" id="guessInput" placeholder="Enter your guess" style="text-transform: lowercase;" />
+    <button id="submitGuessBtn">Submit Guess</button>
+    <div id="result"></div>
+    <div id="nextStep" class="hidden">
+      <button id="goToQuizBtn">Go to Quiz</button>
+    </div>
+    <p id="score">Score: 0 | Streak: 0</p>
+  </div>
+
+  <div class="section hidden" id="quiz">
+    <h2>🎓 Quick Quiz!</h2>
+    <p style="font-style: italic; color: #555;">You need at least 66% to pass the quiz.</p>
+    <p id="quizQuestion">Why are hashes useful in blockchain?</p>
+    <div id="quizOptions"></div>
+    <div id="quizProgressBar" style="margin-top: 1rem; height: 20px; background-color: #e0e0e0; border-radius: 10px; overflow: hidden;">
+      <div id="quizProgress" style="height: 100%; width: 0%; background-color: #4caf50; text-align: center; color: white; line-height: 20px; font-size: 0.8rem;"></div>
+    </div>
+    <div id="quizResult"></div>
+  </div>
+
+  <div class="section hidden" id="summary">
+    <h2>✅ Summary & Conclusion</h2>
+    <p>Congratulations! You've just completed the Hash Guessing Game — and learned an important concept in the world of cryptography and blockchain.</p>
+
+    <h3>🔐 What is a hash?</h3>
+    <p>A <strong>hash</strong> is a special kind of digital fingerprint. It takes any input — like a word or a file — and transforms it into a unique string of characters. If you change even a single letter, the resulting hash changes completely. This process is <strong>one-way</strong>, meaning there's no way to go backward and figure out what the original input was just by looking at the hash.</p>
+
+    <h3>🎯 What did this game teach you?</h3>
+    <p>By giving you the hash of a secret word, the game challenged you to find the original word. But since hashes can't be reversed, your only strategy was to guess possible words, hash them, and compare the results. When a guess matched the target hash, you knew you'd found the original word.</p>
+    <p>This hands-on experience illustrates a core principle of hashing: <strong>you can verify a match, but you can't work backward to reveal the secret</strong>.</p>
+
+    <h3>🔍 Where are hashes used in real life?</h3>
+    <ul>
+      <li><strong>Crypto Mining (Proof of Work):</strong> In blockchains like Bitcoin, miners guess different values (nonces) to find a hash that meets specific rules. It’s all about trial and error — just like this game.</li>
+      <br>
+      <li><strong>Password Storage:</strong> Websites don’t store your actual password. They store its hash. When you log in, the system hashes your input and checks it against the stored hash. That way, even if the database is compromised, your real password stays safe.</li>
+    </ul>
+
+        <button onclick="restartGame()">🔁 Play Again</button>
+    <button onclick="exitGame()">❌ Exit the Game</button>
+  </div>
+  <script>
+    const wordCategories = {
+      drinks: ["water", "juice", "latte", "cider", "mocha", "tonic", "shake", "pepsi", "lager"],
+      animals: ["tiger", "zebra", "koala", "lemur", "panda", "eagle", "horse", "rhino", "llama"],
+      tech: ["block", "token", "bytes", "cache", "modem", "mouse", "chips", "proxy", "cloud"]
+    };
+
+    let wordList = [];
+    let categoryLabel = '';
+    let secretWord = "";
+    let targetHash = "";
+    let attempts = 0;
+    let score = 0;
+    let streak = 0;
+
+
+    async function hashString(str) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(str);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    function startGame() {
+      const category = document.getElementById("category").value;
+      categoryLabel = category.charAt(0).toUpperCase() + category.slice(1);
+      wordList = wordCategories[category];
+      secretWord = wordList[Math.floor(Math.random() * wordList.length)];
+      document.getElementById("categorySelect").classList.add("hidden");
+      document.getElementById("lesson").classList.remove("hidden");
+    }
+
+    async function showGame() {
+      document.getElementById("lesson").classList.add("hidden");
+      document.getElementById("game").classList.remove("hidden");
+      targetHash = await hashString(secretWord);
+      document.getElementById("hashDisplay").textContent = targetHash;
+      document.getElementById("clue").innerHTML = `It's a ${categoryLabel.toLowerCase().slice(0, -1)}, a ${secretWord.length}-letter word, lowercase only.`;
+    }
+
+    async function checkGuess() {
+      const input = document.getElementById("guessInput");
+      input.value = input.value.toLowerCase();
+      const guess = input.value;
+      input.value = "";
+      const guessedHash = await hashString(guess);
+      const resultDiv = document.getElementById("result");
+      const clue = document.getElementById("clue");
+
+      if (guess === secretWord) {
+        score++;
+        streak++;
+        resultDiv.innerHTML = `<div class='quiz-feedback correct fade-in'>✅ Correct! "${guess}" matches the secret word!<br/><span style='display: block; margin-top: 0.5rem; font-family: monospace;'>Hash:<br><mark style='background-color: #d6f5e6; color: #207544; word-break: break-word; display: inline-block;'>${guessedHash}</mark></span><br/>It matches the original hash. Hashes are one-way: you can calculate a hash from a word, but not the other way around. The only way to discover the word is by guessing and comparing.</div>`;
+        document.getElementById("nextStep").classList.remove("hidden");
+      } else {
+        streak = 0;
+        attempts++;
+        let hints = [
+          `The word starts with '${secretWord.charAt(0)}'.`,
+          `The second letter is '${secretWord.charAt(1)}'.`,
+          `The word ends with '${secretWord.charAt(secretWord.length - 1)}'.`,
+          secretWord.length > 3 ? `The third letter is '${secretWord.charAt(2)}'.` : '',
+          secretWord.length > 4 ? `The fourth letter is '${secretWord.charAt(3)}'.` : '',
+          secretWord.length > 5 ? `The fifth letter is '${secretWord.charAt(4)}'.` : ''
+        ].filter(Boolean);
+
+        let newHint = attempts - 1 < hints.length ? hints[attempts - 1] : `Try rearranging your thoughts! 😉`;
+        clue.innerHTML += `<div class='hint-highlight'>Hint ${attempts}: ${newHint}</div>`;
+        resultDiv.innerHTML = `<div class='quiz-feedback incorrect fade-in'>❌ Nope. You entered: "${guess}"<br/>
+<pre style='margin: 0; padding: 0; font-family: monospace; white-space: pre-wrap; word-wrap: break-word; line-height: 1;'>
+<span style='display: inline-block; margin-top: 0.5rem;'>Your Hash:</span>
+<mark style='background-color: #ffd6d6; color: #b22222;'>${guessedHash}</mark>
+<span style='display: inline-block; color: #000; margin-top: 0.5rem;'>Expected Hash:</span>
+<mark style='background-color: #eee0e0; color: #000;'>${targetHash}</mark>
+</pre>
+</div>`;
+      }
+      document.getElementById("score").textContent = `Score: ${score} | Streak: ${streak}`;
+    }
+
+    function goToQuiz() {
+      document.getElementById("game").classList.add("hidden");
+      document.getElementById("quiz").classList.remove("hidden");
+      startQuiz();
+    }
+
+    function showSummary() {
+      document.getElementById("quiz").classList.add("hidden");
+      document.getElementById("summary").classList.remove("hidden");
+    }
+
+    function restartGame() {
+      window.location.reload();
+    }
+
+    function exitGame() {
+      document.body.innerHTML = '<div class="section"><h2>👋 Thanks for playing!</h2><p>See you next time!</p></div>';
+    }
+
+    function startQuiz() {
+      const quizData = [
+        {
+          question: "Why are hashes useful in blockchain?",
+          options: [
+            { text: "To make data easier to read", value: "A" },
+            { text: "To reverse-engineer original data", value: "B" },
+            { text: "To verify that no one has changed the data", value: "C" },
+            { text: "To compress large files", value: "D" }
+          ],
+          correct: "C"
+        },
+        {
+          question: "What happens to the hash if the input changes slightly?",
+          options: [
+            { text: "It changes slightly", value: "A" },
+            { text: "It stays the same", value: "B" },
+            { text: "It changes completely", value: "C" },
+            { text: "It becomes unreadable", value: "D" }
+          ],
+          correct: "C"
+        },
+        {
+          question: "Which of the following best describes a cryptographic hash?",
+          options: [
+            { text: "It compresses a file to save space", value: "A" },
+            { text: "It encrypts data with a secret key", value: "B" },
+            { text: "It transforms input into a fixed-length, irreversible string", value: "C" },
+            { text: "It sorts data alphabetically", value: "D" }
+          ],
+          correct: "C"
+        },
+        {
+          question: "What is one-way functionality in hashing?",
+          options: [
+            { text: "You can recover the original input from the hash", value: "A" },
+            { text: "Once hashed, the input cannot be reversed", value: "B" },
+            { text: "Hashing is always random", value: "C" },
+            { text: "Hashing uses two inputs", value: "D" }
+          ],
+          correct: "B"
+        }
+      ];
+
+      let quizIndex = 0;
+      let correctAnswers = 0;
+      const questionElement = document.getElementById("quizQuestion");
+      const optionsContainer = document.getElementById("quizOptions");
+      const result = document.getElementById("quizResult");
+      const progress = document.getElementById("quizProgress");
+
+      function showNextQuestion() {
+        if (quizIndex >= quizData.length) {
+          const scorePercent = Math.round((correctAnswers / quizData.length) * 100);
+          result.innerHTML = `<div class='quiz-feedback ${scorePercent >= 66 ? "correct" : "incorrect"}'>You scored ${scorePercent}%.</div>`;
+          if (scorePercent < 66) {
+            result.innerHTML += `<p>❌ You need at least 66% to pass.</p><button onclick='startQuiz()'>Try Quiz Again</button>`;
+          }
+          result.innerHTML += `<button onclick='showSummary()'>Next</button>`;
+          return;
+        }
+
+        const current = quizData[quizIndex];
+        questionElement.textContent = current.question;
+        optionsContainer.innerHTML = "";
+        result.innerHTML = "";
+
+        current.options.sort((a, b) => a.value.localeCompare(b.value)).forEach(option => {
+          const div = document.createElement("div");
+          div.className = "quiz-option";
+          div.textContent = `${option.value}. ${option.text}`;
+          div.onclick = () => {
+            const allOptions = optionsContainer.querySelectorAll('.quiz-option');
+            allOptions.forEach(opt => opt.style.pointerEvents = 'none');
+            const isCorrect = option.value === current.correct;
+            if (isCorrect) {
+              div.style.backgroundColor = '#d1e7dd';
+              div.style.borderColor = '#badbcc';
+              div.style.color = '#0f5132';
+              correctAnswers++;
+            } else {
+              div.style.backgroundColor = '#f8d7da';
+              div.style.borderColor = '#f5c2c7';
+              div.style.color = '#842029';
+            }
+            quizIndex++;
+            const scorePercent = Math.round((correctAnswers / quizData.length) * 100);
+            progress.style.width = `${(correctAnswers / quizData.length) * 100}%`;
+            progress.textContent = `${scorePercent}%`;
+            const nextBtn = document.createElement("button");
+            nextBtn.textContent = "Next";
+            nextBtn.onclick = showNextQuestion;
+            result.appendChild(nextBtn);
+            const prompt = document.createElement("p");
+            prompt.textContent = 'Click Next to continue.';
+            prompt.style.fontStyle = 'italic';
+            prompt.style.marginTop = '0.5rem';
+            result.appendChild(prompt);
+          };
+          optionsContainer.appendChild(div);
+        });
+      }
+
+      quizIndex = 0;
+      correctAnswers = 0;
+      progress.style.width = "0%";
+      progress.textContent = "0%";
+      showNextQuestion();
+    }
+
+    document.getElementById("startGameBtn").onclick = startGame;
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.body.classList.add('dark-mode');
+    }
+    document.getElementById("showGameBtn").onclick = showGame;
+    document.getElementById("submitGuessBtn").onclick = checkGuess;
+    document.getElementById("goToQuizBtn").onclick = goToQuiz;
+    document.getElementById("guessInput").addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        checkGuess();
+      }
+    });
+
+    function toggleDarkMode() {
+  const isDark = document.body.classList.toggle('dark-mode');
+  localStorage.setItem('darkMode', isDark);
+  const status = document.createElement('div');
+  status.textContent = isDark ? '🌙 Dark mode enabled' : '☀️ Light mode enabled';
+  status.style.position = 'fixed';
+  status.style.bottom = '1rem';
+  status.style.right = '1rem';
+  status.style.backgroundColor = isDark ? '#333' : '#eee';
+  status.style.color = isDark ? '#fff' : '#000';
+  status.style.padding = '0.5rem 1rem';
+  status.style.borderRadius = '6px';
+  status.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
+  status.style.zIndex = '1000';
+  status.style.opacity = '1';
+  status.style.transition = 'opacity 0.5s ease';
+  document.body.appendChild(status);
+  setTimeout(() => {
+    status.style.opacity = '0';
+    setTimeout(() => status.remove(), 500);
+  }, 2000);
+}
+</script>
+</body>
+</html>
