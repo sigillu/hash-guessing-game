@@ -41,10 +41,11 @@ This project is licensed under the **MIT License** — meaning:
 - ✅ You can use it in personal or commercial projects
 - ⚠️ Just keep my name in the license as the original creator
 
-See the [LICENSE](LICENSE) file for details.
+See the [LICENSE](LICENSE.txt) file for details.
 
 ## 🤝 Contributing
-We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) and sign our [Contributor License Agreement](CLA.md) before submitting pull requests.
+We welcome contributions! 
+Please read our [Contributing Guidelines](CONTRIBUTING.md) and sign our [Contributor License Agreement](CLA.md) before submitting pull requests.
 
 
 Copyright (c) 2025
