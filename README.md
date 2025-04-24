@@ -9,6 +9,7 @@ A fun and educational browser game that teaches players the basics of cryptograp
 - Use clues to guess the original word
 - Learn how small changes produce drastically different hashes
 - Finish with a quick multiple-choice quiz to test your understanding
+- Try a Hashing Tool
 
 ## 💻 Built With
 
