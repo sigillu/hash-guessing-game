@@ -24,14 +24,17 @@ You can also host it live using GitHub Pages, Netlify, or any static site host.
 ## 📸 Preview
 ![Screenshot of Game](preview.png) <!-- Add a screenshot file if you like -->
 
+
 ## 🌐 Live Demo
 [🔗 Click here to play the game](https://sigillu.github.io/hash-guessing-game/)
+
 
 
 ## 🏢 Maintained By
 This project is developed and maintained by **Gold-Rep Corporation**, a Delaware Corporation.
 
 For business inquiries or licensing options, contact us at: [admin@sigillu.com](mailto:admin@sigillu.com)
+
 
 
 ## 📄 License
