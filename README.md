@@ -33,6 +33,7 @@ This project is developed and maintained by **Gold-Rep Corporation**, a Delaware
 
 For business inquiries or licensing options, contact us at: [admin@sigillu.com](mailto:admin@sigillu.com)
 
+
 ## 📄 License
 This project is licensed under the **MIT License** — meaning:
 
