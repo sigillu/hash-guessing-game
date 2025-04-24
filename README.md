@@ -8,7 +8,8 @@ A fun and educational browser game that teaches players the basics of cryptograp
 - View the SHA-256 hash of a secret word
 - Use clues to guess the original word
 - Learn how small changes produce drastically different hashes
-- Finish with a quick multiple-choice quiz to test your understanding
+- Test your understanding with a quick multiple-choice quiz
+- Read a summary to solidify your knowledge
 - Try a Hashing Tool
 
 ## 💻 Built With
