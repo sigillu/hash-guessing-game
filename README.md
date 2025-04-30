@@ -11,6 +11,7 @@ A fun and educational browser game that teaches players the basics of cryptograp
 - Test your understanding with a quick multiple-choice quiz
 - Read a summary to solidify your knowledge
 - Try a Hashing Tool
+- Enjoy a Bonus Game!
 
 ## 💻 Built With
 
