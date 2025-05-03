@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Hash Guessing Game</title>
+  <style>
+    /* Basic Styling */
+    html {
+        scroll-behavior: smooth; /* Optional: adds smooth scrolling */
+    }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      background-color: #ffffff;
+      color: #333;
+      transition: background-color 0.3s, color 0.3s; /* Smooth transition for dark mode */
+    }
+    .section {
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: #f9f9f9;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      transition: background-color 0.3s, border-color 0.3s; /* Smooth transition */
+    }
+    code {
+      background: #f0f0f0;
+      padding: 4px 6px;
+      border-radius: 4px;
+      display: block;
+      margin: 0.5rem 0;
+      font-family: monospace;
+      color: #333;
+      word-break: break-word; /* Ensure long hashes wrap */
+      transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+    }
+    .hidden { display: none; }
+    button, .button-link { /* Style links like buttons */
+      display: inline-block; /* Allow margin/padding */
+      background-color: #007bff;
+      border: none;
+      color: #fff !important; /* Ensure text is white, override link color */
+      padding: 0.5rem 1rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 1rem;
+      margin-right: 0.5rem;
+      text-decoration: none; /* Remove underline from links styled as buttons */
+      text-align: center;
+      font-family: Arial, sans-serif; /* Match button font */
+      font-size: inherit; /* Match button font size */
+      transition: background-color 0.2s, transform 0.1s; /* Button transitions */
+    }
+    /* Specific style for secondary/back/skip buttons */
+    button.secondary {
+        background-color: #6c757d; /* Grey color */
+    }
+    button.secondary:hover {
+        background-color: #5a6268;
+    }
+     /* Specific style for donation button (Kept for potential future use, but button removed) */
+    .button-link.donate {
+        background-color: #ffdd00; /* Yellow color like coffee */
+        color: #333 !important; /* Dark text */
+        border: 1px solid #e0c200;
+    }
+    .button-link.donate:hover {
+        background-color: #e0c200;
+        color: #333 !important;
+        transform: translateY(-1px);
+    }
+
+
+    button:hover, .button-link:hover:not(.donate) { /* Exclude donate button from dark hover */
+      background-color: #0056b3;
+      transform: translateY(-1px); /* Slight lift on hover */
+      color: #fff !important; /* Keep text white on hover */
+    }
+    button:active, .button-link:active {
+      transform: translateY(0px); /* Press effect */
+    }
+    input[type="text"], select {
+      padding: 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      margin-right: 0.5rem;
+      min-width: 140px;
+      width: auto;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Smooth transition */
+    }
+    /* Quiz Specific */
+    .quiz-option {
+      background-color: #f0f0f0;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin: 0.25rem 0;
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s; /* Smooth transition */
+    }
+    .quiz-option:hover {
+      background-color: #007bff;
+      color: #fff;
+    }
+    ol li {
+      margin-bottom: 1rem;
+      line-height: 1.6; /* Better readability for list items */
+    }
+    /* Progress Bar Styles */
+    .progress-bar-container {
+        margin-top: 0.75rem; /* Space between bars/labels */
+        height: 20px;
+        background-color: #e0e0e0;
+        border-radius: 10px;
+        overflow: hidden;
+        width: 100%; /* Ensure full width */
+    }
+    .progress-bar {
+        height: 100%;
+        width: 0%;
+        text-align: center;
+        color: white;
+        line-height: 20px; /* Vertically center text */
+        font-size: 0.8rem;
+        transition: width 0.5s ease; /* Smooth transition */
+        white-space: nowrap; /* Prevent text wrapping */
+    }
+    #quizProgress { background-color: #4caf50; } /* Green for completion */
+    #quizScoreBar { background-color: #007bff; } /* Blue for score */
+    .progress-label {
+        font-size: 0.85rem;
+        font-weight: bold;
+        margin-top: 1rem; /* Space above first label */
+        margin-bottom: 0.25rem; /* Space below label */
+        display: block; /* Ensure it takes full width */
+        color: #555;
+    }
+
+    /* Animations */
+    .fade-in {
+      animation: fadeIn 1s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .clue-hints {
+      margin-top: 1rem;
+      line-height: 1.6;
+    }
+    .hint-highlight {
+      background-color: #ffffcc;
+      padding: 0.25rem 0.5rem;
+      border-left: 4px solid #ffcc00;
+      margin-top: 0.5rem;
+      display: block;
+      animation: fadeInHint 0.6s ease-in-out;
+    }
+    @keyframes fadeInHint {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .quiz-feedback {
+      padding: 0.75rem;
+      margin-top: 1rem;
+      border-radius: 6px;
+      font-weight: bold;
+      animation: fadeInFeedback 0.6s ease-in-out;
+    }
+    .quiz-feedback.correct {
+      background-color: #e6ffed;
+      color: #207544;
+      border: 1px solid #b5e2c5;
+    }
+    .quiz-feedback.incorrect {
+      background-color: #ffeaea;
+      color: #b22222; /* Default color for incorrect feedback text */
+      border: 1px solid #e2b5b5;
+    }
+    /* Ensure target hash label is default color even in incorrect feedback */
+    .quiz-feedback.incorrect .target-hash-label {
+      color: #333; /* Default text color for light mode */
+    }
+    /* Style for the reminder text */
+    .reminder-text {
+        font-size: 0.9em;
+        font-style: italic;
+        color: #666;
+        margin-top: 0.25rem; /* Small space below hash */
+        margin-bottom: 1rem; /* Space before clue */
+    }
+    /* Bonus Game Specific Styles */
+    #bonusGame .country-guess-option {
+        display: inline-block;
+        margin: 0.5rem 0.25rem;
+        background-color: #007bff; /* Default blue */
+        border: none;
+        color: #fff !important;
+        transition: background-color 0.2s, transform 0.1s; /* Add transitions */
+    }
+    #bonusGame .country-guess-option:hover:not(:disabled) { /* Only apply hover if not disabled */
+        background-color: #0056b3;
+        transform: translateY(-1px);
+    }
+    /* Style for correctly guessed country */
+    #bonusGame .country-guess-option.correct-guess {
+        background-color: #28a745 !important; /* Green - Use !important for higher specificity */
+        cursor: default;
+    }
+    /* Style for incorrectly guessed country */
+    #bonusGame .country-guess-option.incorrect-guess {
+        background-color: #dc3545 !important; /* Red - Use !important for higher specificity */
+        cursor: default; /* Optional: change cursor for incorrect too */
+    }
+    /* Style for disabled buttons (after correct guess) */
+    #bonusGame .country-guess-option:disabled {
+        background-color: #adb5bd; /* Lighter grey when disabled */
+        cursor: not-allowed;
+        transform: none; /* Remove hover effect */
+    }
+    /* Ensure correct guess stays green even when disabled */
+    #bonusGame .country-guess-option.correct-guess:disabled {
+        background-color: #28a745 !important; /* Keep Green */
+    }
+
+    #bonusGame code { /* Ensure code blocks in bonus game look right */
+        margin-top: 0.25rem;
+        margin-bottom: 1rem;
+    }
+    #bonusHashDisplay {
+        min-height: 3em; /* Prevent layout shift when hash appears */
+        padding-top: 0.5rem;
+    }
+    /* Exit Screen Score Animation */
+    .score-highlight {
+        animation: pulseScore 1.5s infinite ease-in-out;
+    }
+    @keyframes pulseScore {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.03); opacity: 0.9; }
+    }
+    body.dark-mode .score-highlight p { /* Ensure text is readable in dark mode during pulse */
+        color: #f0f0f0 !important;
+    }
+
+    /* Dark Mode Toggle Button Styling */
+    #darkModeToggle {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 1002;
+        padding: 0.3rem 0.6rem;
+        font-size: 1.2rem;
+        background: none;
+        border: 1px solid #ccc;
+        border-radius: 50%;
+        line-height: 1;
+        cursor: pointer;
+        width: auto; /* Override potential general button width */
+        box-sizing: content-box; /* Ensure padding doesn't affect size */
+        margin: 0; /* Override potential general button margin */
+        color: #333; /* Ensure icon is visible in light mode */
+    }
+    #darkModeToggle:hover {
+        background-color: rgba(0,0,0,0.05); /* Subtle hover */
+    }
+
+    /* Visually Hidden Class for Labels */
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+    }
+
+
+    @keyframes fadeInFeedback {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    /* Responsive Design */
+    @media (max-width: 600px) {
+      body {
+        margin: 1rem;
+        font-size: 16px;
+      }
+      h1, h2, h3 {
+        font-size: 1.2em;
+      }
+      .section {
+        padding: 1rem 0.75rem;
+      }
+      /* Apply width: 100% only to buttons *not* the dark mode toggle */
+      button:not(#darkModeToggle), .button-link, input[type="text"], select {
+        width: 100%;
+        box-sizing: border-box; /* Include padding and border in width */
+        margin: 0.5rem 0;
+        font-size: 1rem;
+      }
+       /* Ensure dark mode toggle keeps its size */
+      #darkModeToggle {
+          width: auto;
+          box-sizing: content-box;
+          margin: 0; /* Keep margin 0 */
+          /* Adjust position slightly if needed for mobile */
+          top: 0.5rem;
+          right: 0.5rem;
+      }
+
+      .quiz-option {
+        font-size: 1rem;
+        padding: 0.75rem;
+      }
+      code {
+        font-size: 0.85rem; /* Slightly smaller code font on mobile */
+      }
+      /* Adjust button/link margin for stacking */
+      button:not(#darkModeToggle), .button-link {
+        margin-right: 0;
+      }
+      .progress-bar {
+          font-size: 0.7rem; /* Slightly smaller font on mobile */
+      }
+      #bonusGame .country-guess-option { /* Stack bonus game options */
+          display: block;
+          width: 100%;
+          margin: 0.5rem 0;
+          box-sizing: border-box;
+      }
+    }
+    /* Dark Mode */
+    body.dark-mode {
+      background-color: #121212;
+      color: #f0f0f0;
+    }
+    body.dark-mode .section {
+      background-color: #1e1e1e;
+      border-color: #333;
+    }
+    body.dark-mode code {
+      background-color: #2c2c2c;
+      color: #e0e0e0;
+    }
+    body.dark-mode .quiz-option {
+      background-color: #2a2a2a;
+      border-color: #555;
+      color: #f0f0f0;
+    }
+    body.dark-mode .quiz-option:hover {
+      background-color: #444;
+      color: #fff;
+    }
+    body.dark-mode button, body.dark-mode .button-link {
+      background-color: #444;
+      color: #fff !important;
+    }
+     body.dark-mode button:hover, body.dark-mode .button-link:hover:not(.donate) { /* Exclude donate button from dark hover */
+      background-color: #555;
+      color: #fff !important;
+    }
+     /* Dark mode secondary button */
+     body.dark-mode button.secondary {
+        background-color: #5a6268;
+     }
+     body.dark-mode button.secondary:hover {
+        background-color: #495057;
+     }
+      /* Dark mode donate button */
+     body.dark-mode .button-link.donate {
+        background-color: #ffdd00; /* Keep yellow */
+        color: #333 !important; /* Keep dark text */
+        border-color: #e0c200;
+     }
+     body.dark-mode .button-link.donate:hover {
+        background-color: #e0c200;
+        color: #333 !important;
+     }
+
+    body.dark-mode input[type="text"],
+    body.dark-mode select {
+      background-color: #2c2c2c;
+      color: #f0f0f0;
+      border-color: #555;
+    }
+    body.dark-mode .hint-highlight {
+      background-color: #444444;
+      color: #ffff66;
+      border-left: 4px solid #ffcc00;
+    }
+    body.dark-mode .quiz-feedback.correct {
+      background-color: #1a3a24;
+      color: #a6e2b8;
+      border-color: #3d6e4f;
+    }
+    body.dark-mode .quiz-feedback.incorrect {
+      background-color: #4d1f1f;
+      color: #f5b5b5; /* Default dark mode incorrect text color */
+      border-color: #8c4d4d;
+    }
+    /* Refined dark mode rule for target hash label */
+    body.dark-mode .quiz-feedback.incorrect .target-hash-label {
+        color: #f0f0f0 !important; /* Default text color for dark mode, !important for specificity */
+    }
+    /* Specific override for target hash value mark in dark mode */
+    body.dark-mode .target-hash-value {
+        background-color: #2c2c2c !important; /* Match code background */
+        color: #e0e0e0 !important; /* Match code text color */
+    }
+    /* Dark mode progress bars */
+    body.dark-mode .progress-bar-container {
+        background-color: #444;
+    }
+    body.dark-mode #quizProgress {
+        background-color: #367c39; /* Keep green */
+    }
+    body.dark-mode #quizScoreBar {
+        background-color: #0d6efd; /* Keep blue */
+    }
+     body.dark-mode .progress-label {
+        color: #aaa; /* Lighter label color */
+    }
+     /* Dark mode reminder text */
+     body.dark-mode .reminder-text {
+        color: #aaa;
+     }
+     /* Dark mode bonus game options */
+     body.dark-mode #bonusGame .country-guess-option {
+         background-color: #444; /* Match primary dark button */
+         border: none;
+         color: #fff !important;
+     }
+     body.dark-mode #bonusGame .country-guess-option:hover:not(:disabled) {
+         background-color: #555; /* Match primary dark hover */
+     }
+     /* Dark mode bonus game feedback colors */
+     body.dark-mode #bonusGame .country-guess-option.correct-guess {
+        background-color: #198754 !important; /* Darker green */
+     }
+     body.dark-mode #bonusGame .country-guess-option.incorrect-guess {
+        background-color: #b02a37 !important; /* Darker red */
+     }
+      body.dark-mode #bonusGame .country-guess-option:disabled {
+        background-color: #495057; /* Darker grey when disabled */
+    }
+     /* Dark mode bonus game disabled correct */
+     body.dark-mode #bonusGame .country-guess-option.correct-guess:disabled {
+        background-color: #198754 !important; /* Keep Dark Green */
+     }
+
+     /* Dark mode toggle button */
+     body.dark-mode #darkModeToggle {
+        border-color: #555;
+        color: #f0f0f0;
+     }
+      body.dark-mode #darkModeToggle:hover {
+        background-color: rgba(255,255,255,0.1); /* Subtle hover */
+    }
+
+
+     body.dark-mode .modal-content {
+        background-color: #1e1e1e;
+        border-color: #333;
+    }
+    body.dark-mode .close {
+        color: #aaa;
+    }
+    body.dark-mode .close:hover,
+    body.dark-mode .close:focus {
+        color: #fff;
+    }
+    body.dark-mode .toast {
+        background-color: #333;
+        color: #fff;
+    }
+    body.dark-mode .toast.info {
+        background-color: #0e5460; /* Darker info blue for contrast */
+    }
+
+
+    /* Hashing Tool Specific Styles */
+    input[type="text"].hash-input { /* Specific class for hash tool input */
+      padding: 0.5rem;
+      width: 100%;
+      max-width: 500px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    .copy-btn {
+      display: inline-block; /* Changed from block */
+      margin-left: 0.5rem; /* Add space next to code */
+      margin-top: 0; /* Align vertically */
+      background: #666;
+      color: white;
+      border: none;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      border-radius: 4px;
+      vertical-align: middle; /* Align with code block */
+    }
+    body.dark-mode .copy-btn {
+        background-color: #555;
+    }
+    body.dark-mode .copy-btn:hover {
+        background-color: #666;
+    }
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #28a745; /* Default success color */
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      z-index: 3000;
+      font-size: 0.9rem;
+      animation: fadeInOut 2.5s ease-in-out forwards; /* Extended duration slightly */
+      opacity: 0; /* Start hidden */
+    }
+    .toast.info { /* Style for non-success messages */
+        background-color: #17a2b8; /* Info blue */
+    }
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translate(-50%, 20px); }
+      10% { opacity: 1; transform: translate(-50%, 0); }
+      90% { opacity: 1; transform: translate(-50%, 0); }
+      100% { opacity: 0; transform: translate(-50%, 20px); }
+    }
+    .hash-title {
+      animation: popIn 1s ease-out;
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      60% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1001;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+      background-color: #fff;
+      margin: 5% auto;
+      padding: 1rem;
+      border: 1px solid #888;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 8px;
+      animation: slideDown 0.4s ease;
+      position: relative; /* Needed for close button positioning */
+      transition: background-color 0.3s, border-color 0.3s; /* Smooth transition */
+    }
+    .close {
+      color: #aaa;
+      position: absolute; /* Position relative to modal-content */
+      top: 10px;
+      right: 15px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 1; /* Ensure it doesn't affect layout height */
+    }
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+    }
+    .modal-trigger {
+      display: inline-block; /* Changed from block to inline-block */
+      margin: 1rem 0.5rem 0 0; /* Adjusted margin */
+      padding: 0.5rem 1.2rem;
+      font-size: 1rem;
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      color: #fff !important; /* Ensure text is white */
+      text-decoration: none; /* Remove underline */
+      border-radius: 4px; /* Match other buttons */
+    }
+    .modal-trigger:hover {
+      transform: scale(1.05) translateY(-1px); /* Added lift */
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+     body.dark-mode .modal-trigger {
+        background: linear-gradient(135deg, #444, #555);
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    /* Exit Screen Specific Styles */
+    #exitScreen {
+        text-align: center; /* Center content */
+    }
+    #exitScreen p {
+        margin-bottom: 1.5rem; /* Add space below paragraphs */
+    }
+  </style>
+</head>
+<body>
+  <button id="darkModeToggle" onclick="toggleDarkMode()" aria-label="Toggle dark mode">🌗</button>
+
+  <div id="gameContainer">
+      <h1>🔐 Hash Guessing Game</h1>
+
+      <div class="section" id="lesson">
+        <h2>🎓 What Is Hashing? (Quick Crash Course)</h2>
+        <ol>
+          <li>A hash is like a fingerprint for data. It turns any input into a unique string.</li>
+          <li>The same input always gives the same hash. For example:
+            <code>"banana" → b9bc5a11f18c0d63f6d9d30d5e00fcb58a91a0b1fbd2f3441dc8e4edcd7a1637</code>
+          </li>
+          <li>Even a small change = completely different hash:
+            <code>"Banana" → 7c5507a22e37c423f5b2d4d69ae857aad8fa1e75be3e2dc7b54f77f0252fefb0</code>
+          </li>
+          <li>Hashes are one-way. You can go from a word to a hash, but not backward.</li>
+          <li>Blockchains use hashing to protect data — changing data changes the hash!</li>
+        </ol>
+        <button id="showGameBtn">Start Game</button>
+      </div>
+
+      <div class="section hidden" id="game">
+        <h2>🧩 Guess the Word</h2>
+        <p>The SHA-256 hash of the secret word is:</p>
+        <code id="hashDisplay"></code>
+        <p class="reminder-text">Remember, you can't directly calculate the word from this hash – you have to guess!</p>
+        <p><strong>Clue:</strong> <span class="clue-hints" id="clue"></span></p>
+        <label for="guessInput" class="sr-only">Enter your guess (lowercase)</label>
+        <input id="guessInput" placeholder="Enter your guess (lowercase)" style="text-transform: lowercase;" type="text"/>
+        <button id="submitGuessBtn">Submit Guess</button>
+        <div id="result" aria-live="polite"></div>
+        <div class="hidden" id="nextStep">
+          <button id="goToQuizBtn">Go to Quiz</button>
+        </div>
+        <button id="backToLessonBtn" class="secondary" onclick="goBackToLesson()">← Back to Lesson</button>
+        <button id="skipToQuizBtn" class="secondary" onclick="goToQuiz()">Skip to Quiz →</button>
+      </div>
+
+      <div class="section hidden" id="quiz">
+        <h2>🎓 Quick Quiz!</h2>
+        <p style="font-style: italic; color: #555;">You need at least 66% to pass the quiz.</p>
+        <p id="quizQuestion">Why are hashes useful in blockchain?</p>
+        <div id="quizOptions"></div>
+
+        <div>
+            <span class="progress-label">Completion Progress:</span>
+            <div id="quizProgressBarContainer" class="progress-bar-container">
+              <div id="quizProgress" class="progress-bar"></div>
+            </div>
+            <span class="progress-label">Score Progress:</span>
+            <div id="quizScoreBarContainer" class="progress-bar-container">
+              <div id="quizScoreBar" class="progress-bar"></div>
+            </div>
+        </div>
+        <div id="quizResult" aria-live="polite"></div>
+      </div>
+
+      <div class="section hidden" id="summary">
+        <h2>✅ Summary &amp; Conclusion</h2>
+        <p>Congratulations! You've just completed the Hash Guessing Game — and learned an important concept in the world of cryptography and blockchain.</p>
+        <h3>🔐 What is a hash?</h3>
+        <p>A <strong>hash</strong> is a special kind of digital fingerprint. It takes any input — like a word or a file — and transforms it into a unique string of characters. If you change even a single letter, the resulting hash changes completely. This process is <strong>one-way</strong>, meaning there's no way to go backward and figure out what the original input was just by looking at the hash.</p>
+        <h3>🎯 What did this game teach you?</h3>
+        <p>By giving you the hash of a secret word, the game challenged you to find the original word. But since hashes can't be reversed, your only strategy was to guess possible words, hash them, and compare the results. When a guess matched the target hash, you knew you'd found the original word.</p>
+        <p>This hands-on experience illustrates a core principle of hashing: <strong>you can verify a match, but you can't work backward to reveal the secret</strong>.</p>
+        <h3>🔍 Where are hashes used in real life?</h3>
+        <ul>
+          <li><strong>Crypto Mining (Proof of Work):</strong> In blockchains like Bitcoin, miners guess different values (nonces) to find a hash that meets specific rules. It’s all about trial and error — just like this game.</li>
+          <br/>
+          <li><strong>Password Storage:</strong> Websites don’t store your actual password. They store its hash. When you log in, the system hashes your input and checks it against the stored hash. That way, even if the database is compromised, your real password stays safe.</li>
+        </ul>
+        <button id="showBonusGameBtn" onclick="showBonusGame()">🏆 Play Bonus Game</button>
+        <button onclick="goToQuizFromExit()">❓ Re-take Quiz</button>
+        <button onclick="restartGame()">🔁 Play Again</button>
+        <button class="modal-trigger" onclick="openModal()">🧪 Try Hashing Tool</button>
+        <button onclick="exitGame()">🚪 Exit Game</button>
+      </div>
+  </div>
+
+  <div class="section hidden" id="bonusGame">
+      <h2>🏆 Bonus Game: Find the Country!</h2>
+      <p>Maria and Robert have a list of countries they want to visit: Argentina, Brazil, Canada, Colombia, Peru.</p>
+      <p>Maria secretly chose one and sent Robert only its SHA-256 hash:</p>
+      <code id="bonusTargetHash"></code>
+      <p>Help Robert figure out which country Maria chose! Select a country below to see its hash, then click the correct country name to make your guess.</p>
+
+      <label for="bonusCountrySelect" style="display: block; margin-top: 1rem; margin-bottom: 0.25rem; font-weight: bold;">Check Country Hash:</label>
+      <select id="bonusCountrySelect">
+          <option value="">-- Select a Country --</option>
+          <option value="Argentina">Argentina</option>
+          <option value="Brazil">Brazil</option>
+          <option value="Canada">Canada</option>
+          <option value="Colombia">Colombia</option>
+          <option value="Peru">Peru</option>
+      </select>
+
+      <div id="bonusHashDisplay">
+          <code style="visibility: hidden;">Placeholder</code> </div>
+
+      <p style="margin-top: 1.5rem; font-weight: bold;">Which country did Maria choose?</p>
+      <div id="bonusGuessOptions">
+          <button class="country-guess-option" onclick="checkBonusGuess('Argentina', this)">Argentina</button>
+          <button class="country-guess-option" onclick="checkBonusGuess('Brazil', this)">Brazil</button>
+          <button class="country-guess-option" onclick="checkBonusGuess('Canada', this)">Canada</button>
+          <button class="country-guess-option" onclick="checkBonusGuess('Colombia', this)">Colombia</button>
+          <button class="country-guess-option" onclick="checkBonusGuess('Peru', this)">Peru</button>
+      </div>
+
+      <div id="bonusResult" aria-live="polite"></div>
+
+      <button class="secondary" onclick="returnToSummary()">← Back to Summary</button>
+  </div>
+
+  <div class="section hidden" id="exitScreen">
+      </div>
+
+  <div class="modal" id="hashModal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">×</span>
+      <div class="section">
+        <h2 class="hash-title">🔐 Hash It!!!</h2>
+        <p><em>SHA-256 and SHA-512 are cryptographic hash functions that convert any input into a fixed-length digital fingerprint.</em></p>
+        <p>Type any word or phrase below and see how it is hashed using both SHA-256 and SHA-512:</p>
+        <label for="modalTextInput" class="sr-only">Text to hash</label>
+        <input class="hash-input" id="modalTextInput" placeholder="Type something..." type="text"/>
+        <button onclick="showHashes()">Generate Hashes</button>
+        <div id="modalResults" style="margin-top: 1rem;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" style="display: none;">Copied to clipboard!</div>
+
+  <script>
+    // --- DOM Element References ---
+    const lessonSection = document.getElementById("lesson");
+    const gameSection = document.getElementById("game");
+    const quizSection = document.getElementById("quiz");
+    const summarySection = document.getElementById("summary");
+    const bonusGameSection = document.getElementById("bonusGame"); // New Bonus Game Section
+    const exitSection = document.getElementById("exitScreen"); // Exit section reference
+    const gameContainer = document.getElementById("gameContainer"); // Container for main game elements
+    const darkModeToggleBtn = document.getElementById("darkModeToggle"); // Dark mode button
+
+    // --- Game Configuration ---
+    const wordCategories = {
+      drinks: ["water", "juice", "latte", "cider", "mocha", "tonic", "shake", "pepsi", "lager"],
+    };
+
+    // --- Full Quiz Question Pool ---
+    const allQuizQuestions = [
+        { question: "Why are hashes useful in blockchain?", options: [ { text: "To make data easier to read", value: "A" }, { text: "To reverse-engineer original data", value: "B" }, { text: "To verify that no one has changed the data", value: "C" }, { text: "To compress large files", value: "D" } ], correct: "C" },
+        { question: "What happens to the hash if the input changes slightly (e.g., changing \"apple\" to \"Apple\")?", options: [ { text: "It changes slightly", value: "A" }, { text: "It stays the same", value: "B" }, { text: "It changes completely", value: "C" }, { text: "It becomes unreadable", value: "D" } ], correct: "C" },
+        { question: "Which of the following best describes a cryptographic hash function like SHA-256?", options: [ { text: "It compresses a file to save space", value: "A" }, { text: "It encrypts data with a secret key", value: "B" }, { text: "It transforms input into a fixed-length, irreversible string", value: "C" }, { text: "It sorts data alphabetically", value: "D" } ], correct: "C" },
+        { question: "What is \"one-way\" functionality in hashing?", options: [ { text: "You can easily recover the original input from the hash", value: "A" }, { text: "Once hashed, the input cannot be easily reversed", value: "B" }, { text: "Hashing only works on text, not numbers", value: "C" }, { text: "The hash output is always the same, regardless of input", value: "D" } ], correct: "B" },
+        { question: "What is a key characteristic of the output (the hash value) produced by a specific cryptographic hash function like SHA-256?", options: [ { text: "Its length varies depending on the input size.", value: "A" }, { text: "It always has the same, fixed length, regardless of the input size.", value: "B" }, { text: "It's always shorter than the original input.", value: "C" }, { text: "It contains a copy of the original input.", value: "D" } ], correct: "B" },
+        { question: "If you hash the exact same word, like \"banana\", twice using the SHA-256 algorithm, what will the resulting hashes be?", options: [ { text: "They will be completely different each time.", value: "A" }, { text: "They will be identical.", value: "B" }, { text: "They will be similar but not identical.", value: "C" }, { text: "The second hash will be shorter than the first.", value: "D" } ], correct: "B" },
+        { question: "\"Collision resistance\" in hashing means it is computationally difficult to...", options: [ { text: "Find the original input data from its hash.", value: "A" }, { text: "Calculate the hash of a given input quickly.", value: "B" }, { text: "Find two *different* inputs that produce the exact same hash output.", value: "C" }, { text: "Create a hash that is exactly 256 bits long.", value: "D" } ], correct: "C" },
+        { question: "How can hashing be used to verify that a downloaded file hasn't been corrupted or tampered with?", options: [ { text: "By encrypting the file with the hash.", value: "A" }, { text: "By comparing the hash of the downloaded file with a known, trusted hash provided by the source.", value: "B" }, { text: "By trying to reverse the hash to see the original file content.", value: "C" }, { text: "By checking if the hash is longer than the filename.", value: "D" } ], correct: "B" },
+        { question: "Why is it more secure for websites to store hashes of user passwords instead of the passwords themselves?", options: [ { text: "Hashes take up less storage space.", value: "A" }, { text: "If the database is breached, attackers get the hashes, which are hard to reverse, instead of the plain passwords.", value: "B" }, { text: "Hashing makes passwords easier for users to type.", value: "C" }, { text: "Hashes allow the website owner to read user passwords if needed.", value: "D" } ], correct: "B" },
+        { question: "SHA-256 is a specific type of cryptographic hash function. What does the \"256\" typically refer to?", options: [ { text: "The maximum number of characters in the input.", value: "A" }, { text: "The time in seconds it takes to compute the hash.", value: "B" }, { text: "The fixed length of the hash output in bits.", value: "C" }, { text: "The version number of the algorithm.", value: "D" } ], correct: "C" }
+    ];
+
+    // --- Bonus Game Config ---
+    const bonusCountries = ["Argentina", "Brazil", "Canada", "Colombia", "Peru"];
+    const bonusCorrectCountry = "Peru";
+    let bonusTargetHashValue = ""; // Will be calculated on init
+
+    // --- Game State Variables ---
+    let wordList = [];
+    let categoryLabel = '';
+    let secretWord = "";
+    let targetHash = "";
+    let attempts = 0;
+    let score = 0; // Score for word guessing game
+    let streak = 0;
+    let lastQuizScorePercent = -1; // Variable to store the last quiz score percentage
+
+    // --- Core Hashing Function ---
+    async function hashString(str) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(str);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    // --- Game Initialization (Called on page load) ---
+    async function initializeGame() { // Made async to await hash calculation
+        console.log("Initializing game..."); // Debug log
+        categoryLabel = 'Drinks';
+        wordList = wordCategories.drinks;
+        secretWord = wordList[Math.floor(Math.random() * wordList.length)];
+        console.log("Secret word:", secretWord); // Debug log
+
+        // Calculate and store the target hash for the bonus game
+        bonusTargetHashValue = await hashString(bonusCorrectCountry);
+        console.log("Bonus Target Hash (Peru):", bonusTargetHashValue);
+        const bonusTargetHashEl = document.getElementById("bonusTargetHash");
+        if (bonusTargetHashEl) bonusTargetHashEl.textContent = bonusTargetHashValue;
+
+
+        // Apply dark mode if needed
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            if (darkModeToggleBtn) darkModeToggleBtn.textContent = '☀️';
+        } else {
+             if (darkModeToggleBtn) darkModeToggleBtn.textContent = '🌗';
+        }
+
+        // Setup event listeners (check if elements exist)
+        const showGameBtn = document.getElementById("showGameBtn");
+        if (showGameBtn) showGameBtn.onclick = showGame;
+        const submitGuessBtn = document.getElementById("submitGuessBtn");
+        if (submitGuessBtn) submitGuessBtn.onclick = checkGuess;
+        const goToQuizBtn = document.getElementById("goToQuizBtn"); // Button in nextStep div
+        if (goToQuizBtn) goToQuizBtn.onclick = goToQuiz;
+        const skipToQuizBtn = document.getElementById("skipToQuizBtn"); // New skip button
+        if (skipToQuizBtn) skipToQuizBtn.onclick = goToQuiz; // Also calls goToQuiz
+        const guessInput = document.getElementById("guessInput");
+        if (guessInput) {
+            guessInput.addEventListener("keydown", function (event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    checkGuess();
+                }
+            });
+        }
+        // Back button listener
+        const backBtn = document.getElementById("backToLessonBtn");
+        if (backBtn) backBtn.onclick = goBackToLesson;
+        // Bonus Game button listener
+        const showBonusBtn = document.getElementById("showBonusGameBtn");
+        if (showBonusBtn) showBonusBtn.onclick = showBonusGame;
+        // Bonus Game dropdown listener
+        const bonusSelect = document.getElementById("bonusCountrySelect");
+        if (bonusSelect) bonusSelect.onchange = updateBonusHashDisplay;
+
+
+        // Show only the lesson initially
+        hideAllSections(); // Make sure all sections are hidden first
+        if (lessonSection) lessonSection.classList.remove("hidden"); // Show lesson
+        if (gameContainer) gameContainer.classList.remove("hidden"); // Ensure main container is visible
+        window.scrollTo(0, 0); // Scroll to top on initial load
+        console.log("Initialization complete. Lesson should be visible."); // Debug log
+    }
+
+    // --- Helper function to hide all main sections AND game container ---
+    function hideAllSections() {
+        console.log("Hiding all sections..."); // Debug log
+        // Ensure elements exist before adding class
+        if (lessonSection) lessonSection.classList.add("hidden");
+        if (gameSection) gameSection.classList.add("hidden");
+        if (quizSection) quizSection.classList.add("hidden");
+        if (summarySection) summarySection.classList.add("hidden");
+        if (bonusGameSection) bonusGameSection.classList.add("hidden"); // Hide bonus game
+        if (exitSection) exitSection.classList.add("hidden"); // Also hide exit screen initially
+        if (gameContainer) gameContainer.classList.add("hidden"); // Hide main game container
+        console.log("Sections hidden."); // Debug log
+    }
+
+
+    // --- Start the Actual Guessing Game ---
+    async function showGame() {
+      console.log("Showing game section..."); // Debug log
+      window.scrollTo(0, 0); // Scroll to top
+      hideAllSections(); // Hide everything first
+      if (gameSection) gameSection.classList.remove("hidden"); // Show game section
+      if (gameContainer) gameContainer.classList.remove("hidden"); // Show main container
+
+      // Ensure hash is generated before displaying
+      targetHash = await hashString(secretWord);
+      console.log("Target hash:", targetHash); // Debug log
+      if (document.getElementById("hashDisplay")) document.getElementById("hashDisplay").textContent = targetHash;
+      if (document.getElementById("clue")) document.getElementById("clue").innerHTML = `It's a drink, a ${secretWord.length}-letter word, lowercase only.`;
+
+      // Reset game state for the round
+      attempts = 0;
+      if (document.getElementById("result")) document.getElementById("result").innerHTML = "";
+      const guessInput = document.getElementById("guessInput");
+      if (guessInput) {
+          guessInput.value = "";
+          guessInput.disabled = false; // Re-enable input
+          guessInput.focus();
+      }
+       if (document.getElementById("submitGuessBtn")) document.getElementById("submitGuessBtn").disabled = false; // Re-enable button
+       if (document.getElementById("nextStep")) document.getElementById("nextStep").classList.add("hidden");
+       // Score display update removed
+       console.log("Game section ready."); // Debug log
+    }
+
+    // --- Check User's Guess ---
+    async function checkGuess() {
+      const input = document.getElementById("guessInput");
+      if (!input) return; // Exit if input not found
+      input.value = input.value.toLowerCase().trim();
+      const guess = input.value;
+      console.log("Checking guess:", guess); // Debug log
+      if (!guess) return;
+
+      input.value = ""; // Clear input field after guess
+      const guessedHash = await hashString(guess); // Hash the guess
+      console.log("Guessed hash:", guessedHash); // Debug log
+      const resultDiv = document.getElementById("result");
+      if (!resultDiv) return; // Exit if result div not found
+      const clueSpan = document.getElementById("clue"); // Reference to the clue span
+
+      if (guess === secretWord) {
+        // --- Correct Guess ---
+        console.log("Guess CORRECT"); // Debug log
+        score++; // This is the WORD GUESSING score
+        console.log("Word guessing score incremented to:", score);
+        streak++;
+        resultDiv.innerHTML = `<div class='quiz-feedback correct fade-in'>✅ Correct! "${guess}" matches the secret word!<br/><span style='display: block; margin-top: 0.5rem; font-family: monospace;'>Hash:<br><mark style='background-color: #d6f5e6; color: #207544; word-break: break-word; display: inline-block;'>${guessedHash}</mark></span><br/>It matches the target hash. Hashes are one-way: you can calculate a hash from a word, but not the other way around. The only way to discover the word is by guessing and comparing.</div>`;
+        if (document.getElementById("nextStep")) document.getElementById("nextStep").classList.remove("hidden"); // Show button to go to quiz
+        input.disabled = true; // Disable input after correct guess
+        if (document.getElementById("submitGuessBtn")) document.getElementById("submitGuessBtn").disabled = true; // Disable button after correct guess
+
+      } else {
+        // --- Incorrect Guess ---
+         console.log("Guess INCORRECT"); // Debug log
+        streak = 0; // Reset streak
+        attempts++;
+
+        // Provide hints based on the number of attempts
+        let hints = [
+          `The word starts with '${secretWord.charAt(0)}'.`,
+          `The second letter is '${secretWord.charAt(1)}'.`,
+          `The word ends with '${secretWord.charAt(secretWord.length - 1)}'.`,
+          secretWord.length > 3 ? `The third letter is '${secretWord.charAt(2)}'.` : '',
+          secretWord.length > 4 ? `The fourth letter is '${secretWord.charAt(3)}'.` : '',
+          secretWord.length > 5 ? `The fifth letter is '${secretWord.charAt(4)}'.` : ''
+        ].filter(Boolean); // Filter out empty hints (for short words)
+
+        let newHint = attempts - 1 < hints.length ? hints[attempts - 1] : `Try rearranging your thoughts! 😉`;
+        console.log("Hint:", newHint); // Debug log
+
+        // Add hint to clue area if it exists
+        if (clueSpan) {
+            let hintDiv = clueSpan.querySelector(`.hint-highlight.hint-${attempts}`);
+            if (!hintDiv) {
+                hintDiv = document.createElement('div');
+                hintDiv.className = `hint-highlight hint-${attempts}`; // Add class to identify specific hint
+                clueSpan.appendChild(hintDiv);
+            }
+            hintDiv.innerHTML = `Hint ${attempts}: ${newHint}`; // Update or set hint text
+        }
+
+        // Incorrect feedback message - Added explanation
+        resultDiv.innerHTML = `<div class='quiz-feedback incorrect fade-in'>❌ Nope. You entered: "${guess}"<br/>
+<pre style='margin: 0; padding: 0; font-family: monospace; white-space: pre-wrap; word-wrap: break-word; line-height: 1.2;'>
+<span style='display: inline-block; margin-top: 0.5rem;'>Your Hash:</span>
+<mark style='background-color: #ffd6d6; color: #b22222; word-break: break-all;'>${guessedHash}</mark>
+<span style='display: inline-block; margin-top: 0.5rem;' class='target-hash-label'>Target Hash:</span>
+<mark style='background-color: #f0f0f0; color: #333; word-break: break-all;' class='target-hash-value'>${targetHash}</mark>
+</pre>
+<p style="font-weight: normal; margin-top: 0.75rem; font-size: 0.9em;">See how different your hash is? That's the one-way nature of hashing! Keep guessing to find the match.</p>
+</div>`;
+        input.focus(); // Refocus input field
+      }
+      // Score display update removed
+    }
+
+    // --- Navigation Functions ---
+    function goToQuiz() {
+      console.log("Navigating to Quiz section..."); // Debug log
+      hideAllSections();
+      if (quizSection) quizSection.classList.remove("hidden");
+      if (gameContainer) gameContainer.classList.remove("hidden"); // Ensure main container is visible
+      window.scrollTo(0, 0); // Scroll to top
+      startQuiz();
+    }
+
+    function showSummary() {
+      console.log("Navigating to Summary section..."); // Debug log
+      hideAllSections();
+      if (summarySection) summarySection.classList.remove("hidden");
+      if (gameContainer) gameContainer.classList.remove("hidden"); // Ensure main container is visible
+       window.scrollTo(0, 0); // Scroll to top
+    }
+
+    // --- New function to go back to Lesson from Game ---
+    function goBackToLesson() {
+        console.log("Going back to Lesson from Game..."); // Debug log
+        if (gameSection) gameSection.classList.add("hidden");
+        if (lessonSection) lessonSection.classList.remove("hidden");
+        window.scrollTo(0, 0); // Scroll to top
+        // No need to hide gameContainer as both are inside it
+    }
+
+    function restartGame() {
+      console.log("Restarting game..."); // Debug log
+      // Reset scores and pick a new word, then go back to lesson
+      score = 0; // Reset word guessing score
+      lastQuizScorePercent = -1; // Reset last quiz score
+      console.log("Word score reset to 0, Quiz score reset to -1");
+      streak = 0;
+      secretWord = wordList[Math.floor(Math.random() * wordList.length)]; // Pick new word
+      console.log("New secret word:", secretWord); // Debug log
+      hideAllSections();
+      if (lessonSection) lessonSection.classList.remove("hidden"); // Start from lesson
+      if (gameContainer) gameContainer.classList.remove("hidden"); // Ensure main container is visible
+      window.scrollTo(0, 0); // Scroll to top
+    }
+
+    // --- Updated Exit Game Function ---
+    function exitGame() {
+        console.log("Entering exitGame function"); // Debug log
+        console.log("Word Guessing Score at exit:", score);
+        console.log("Last Quiz Score % at exit:", lastQuizScorePercent);
+        hideAllSections(); // Hides gameContainer and all sections inside + exitSection initially
+
+        // Determine the score message
+        let scoreMessage = "";
+        let scoreClass = ""; // Class for animation
+        if (lastQuizScorePercent >= 66) {
+            // Passed the quiz
+            scoreMessage = `<p>🎉🏆✨ Your final quiz score was: ${lastQuizScorePercent}% ✨🏆🎉</p>`;
+            scoreClass = "score-highlight"; // Add class for animation
+        } else if (lastQuizScorePercent >= 0) {
+            // Took quiz but didn't pass
+            scoreMessage = `<p>Your final quiz score was: ${lastQuizScorePercent}%</p>`;
+        } else {
+            // Didn't take quiz
+             scoreMessage = `<p>You didn't complete the quiz this session.</p>`;
+        }
+
+
+        // Populate the exit screen content
+        if (exitSection) {
+            exitSection.innerHTML = `
+                <h2>👋 Thanks for playing!</h2>
+                <div class="${scoreClass}">${scoreMessage}</div>
+                <p>What would you like to do next?</p>
+                <div>
+                    <button onclick="restartGame()">🔁 Play Again</button>
+                    <button onclick="goToQuizFromExit()">❓ Re-take Quiz</button>
+                    <button onclick="openModal()">🧪 Try Hashing Tool</button>
+                    <a href="https://www.cryptomall.com" target="_blank" class="button-link">📚 Learn More</a>
+                    <button onclick="showToast('Rating feature coming soon!', true)">⭐ Rate this Game</button>
+                </div>
+            `;
+            console.log("Exit section populated. Making visible."); // Debug log
+            exitSection.classList.remove("hidden"); // Show the exit screen
+            window.scrollTo(0, 0); // Scroll to top
+            console.log("Exit section should be visible now."); // Debug log
+        } else {
+            console.error("exitSection element not found!"); // Error log
+        }
+    }
+
+    // --- New function to navigate from Exit screen back to Quiz ---
+    function goToQuizFromExit() {
+        console.log("Navigating from Exit/Summary to Quiz..."); // Debug log
+        hideAllSections();
+        if (quizSection) quizSection.classList.remove("hidden");
+        if (gameContainer) gameContainer.classList.remove("hidden"); // Show main container again
+        window.scrollTo(0, 0); // Scroll to top
+        startQuiz(); // Restart the quiz
+    }
+
+    // --- Fisher-Yates Shuffle function ---
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+        }
+        return array;
+    }
+
+    // --- Quiz Logic (Updated for Random Questions) ---
+    function startQuiz() {
+      console.log("Starting Quiz..."); // Debug log
+
+      // --- Select 4 random questions ---
+      const shuffledQuestions = shuffleArray([...allQuizQuestions]); // Shuffle a copy of the full pool
+      const currentQuizQuestions = shuffledQuestions.slice(0, 4); // Take the first 4
+      const numQuestions = currentQuizQuestions.length; // Should always be 4
+      console.log("Selected Questions for this round:", currentQuizQuestions.map(q => q.question));
+
+      let quizIndex = 0;
+      let correctAnswers = 0; // This score is local to the quiz attempt
+      const questionElement = document.getElementById("quizQuestion");
+      const optionsContainer = document.getElementById("quizOptions");
+      const resultDiv = document.getElementById("quizResult");
+      const completionProgressBar = document.getElementById("quizProgress"); // Existing bar
+      const scoreProgressBar = document.getElementById("quizScoreBar"); // New score bar
+
+      // Ensure elements exist before proceeding
+      if (!questionElement || !optionsContainer || !resultDiv || !completionProgressBar || !scoreProgressBar) {
+          console.error("Quiz elements (including progress bars) not found!");
+          return;
+      }
+
+      // --- Function to update both progress bars ---
+      function updateProgressBars() {
+          // Use numQuestions (which is 4) for calculations
+          const completionPercent = numQuestions > 0 ? Math.round(((quizIndex) / numQuestions) * 100) : 0;
+          const scorePercent = numQuestions > 0 ? Math.round((correctAnswers / numQuestions) * 100) : 0;
+
+          // Update Completion Bar
+          completionProgressBar.style.width = `${completionPercent}%`;
+          completionProgressBar.textContent = `${completionPercent}% Complete`;
+
+          // Update Score Bar
+          scoreProgressBar.style.width = `${scorePercent}%`;
+          scoreProgressBar.textContent = `${scorePercent}% Score`;
+      }
+
+      // --- Function to display final results ---
+      function showFinalResults() {
+          console.log("Quiz finished. Showing final results."); // Debug log
+          const finalScorePercent = numQuestions > 0 ? Math.round((correctAnswers / numQuestions) * 100) : 0;
+          lastQuizScorePercent = finalScorePercent; // *** STORE the final percentage globally ***
+          console.log("Stored lastQuizScorePercent:", lastQuizScorePercent);
+
+          resultDiv.innerHTML = `<div class='quiz-feedback ${finalScorePercent >= 66 ? "correct" : "incorrect"}'>Quiz Complete! You scored ${correctAnswers} out of ${numQuestions} (${finalScorePercent}%).</div>`;
+          resultDiv.innerHTML += `<button style="margin-left: 0.5rem;" onclick='showSummary()'>Continue to Summary</button>`;
+          if (finalScorePercent < 66) {
+              resultDiv.innerHTML += `<button onclick='startQuiz()'>Try Quiz Again</button>`;
+          }
+      }
+
+      // --- Function to display the next question ---
+      function showNextQuestion() {
+          console.log(`Showing quiz question ${quizIndex + 1} of ${numQuestions}`); // Debug log
+          // Update progress bars *before* displaying question
+          updateProgressBars();
+
+          // --- Display Current Question ---
+          const current = currentQuizQuestions[quizIndex]; // Use the selected questions
+          questionElement.textContent = `${quizIndex + 1}. ${current.question}`;
+          optionsContainer.innerHTML = "";
+          resultDiv.innerHTML = ""; // Clear previous result/next button
+
+          // Shuffle and display options for the current question
+          current.options.sort(() => Math.random() - 0.5).forEach(option => {
+              const div = document.createElement("div");
+              div.className = "quiz-option";
+              div.textContent = option.text;
+              div.onclick = () => {
+                  console.log(`Answered question ${quizIndex + 1}`); // Debug log
+                  // Disable options
+                  const allOptions = optionsContainer.querySelectorAll('.quiz-option');
+                  allOptions.forEach(opt => { opt.style.pointerEvents = 'none'; opt.style.cursor = 'default'; if (opt !== div) opt.style.opacity = '0.6'; });
+
+                  // Check answer and update score
+                  const isCorrect = option.value === current.correct;
+                  if (isCorrect) {
+                      div.style.backgroundColor = '#d1e7dd'; div.style.borderColor = '#badbcc'; div.style.color = '#0f5132'; div.style.fontWeight = 'bold';
+                      correctAnswers++; // Increment score only if correct
+                      console.log("Correct! Quiz correctAnswers:", correctAnswers);
+                  } else {
+                      div.style.backgroundColor = '#f8d7da'; div.style.borderColor = '#f5c2c7'; div.style.color = '#842029'; div.style.fontWeight = 'bold';
+                      // Highlight correct answer
+                      allOptions.forEach(opt => {
+                          // Find the original option object corresponding to the clicked div's text
+                          const originalOption = currentQuizQuestions[quizIndex].options.find(o => o.text === opt.textContent);
+                          if (originalOption && originalOption.value === current.correct) {
+                             opt.style.backgroundColor = '#d1e7dd'; opt.style.borderColor = '#badbcc'; opt.style.color = '#0f5132'; opt.style.opacity = '1';
+                          }
+                      });
+                      console.log("Incorrect. Quiz correctAnswers:", correctAnswers);
+                  }
+
+                  quizIndex++; // Move to next question index *after* checking answer
+
+                  // Update progress bars *after* score might have changed and index incremented
+                  updateProgressBars();
+
+                  // Check if quiz is over AFTER incrementing index
+                  if (quizIndex >= numQuestions) { // Use numQuestions (which is 4)
+                      // If it's the end, show final results immediately
+                      setTimeout(() => { // Optional delay to let user see feedback
+                          showFinalResults();
+                      }, 1000); // 1 second delay
+                  } else {
+                      // Otherwise, show 'Next' button after a delay
+                      setTimeout(() => {
+                          const nextBtn = document.createElement("button");
+                          nextBtn.textContent = "Next Question →";
+                          nextBtn.onclick = showNextQuestion;
+                          resultDiv.innerHTML = ''; // Clear feedback before adding button
+                          resultDiv.appendChild(nextBtn);
+                      }, 1000); // 1 second delay
+                  }
+              };
+              optionsContainer.appendChild(div);
+          });
+      }
+
+      // Initialize quiz state and bars
+      quizIndex = 0;
+      correctAnswers = 0; // Reset score for this attempt
+      lastQuizScorePercent = -1; // Reset global score before quiz starts
+      updateProgressBars(); // Set initial state (0%)
+      showNextQuestion(); // Show the first question
+    }
+
+    // --- Bonus Game Functions ---
+    function showBonusGame() {
+        console.log("Showing Bonus Game...");
+        window.scrollTo(0, 0); // Scroll to top
+        hideAllSections(); // Hide other sections
+        // Reset bonus game state
+        const bonusSelect = document.getElementById("bonusCountrySelect");
+        if (bonusSelect) bonusSelect.value = "";
+        const bonusHashDisplay = document.getElementById("bonusHashDisplay");
+        if (bonusHashDisplay) bonusHashDisplay.innerHTML = '<code style="visibility: hidden;">Placeholder</code>'; // Clear hash display
+        const bonusResult = document.getElementById("bonusResult");
+        if (bonusResult) bonusResult.innerHTML = ""; // Clear previous result
+        // Enable guess options and remove result classes
+        const guessOptions = document.querySelectorAll('#bonusGuessOptions .country-guess-option');
+        guessOptions.forEach(opt => {
+            opt.disabled = false;
+            opt.classList.remove('correct-guess', 'incorrect-guess');
+        });
+
+        if (bonusGameSection) bonusGameSection.classList.remove("hidden"); // Show bonus game
+    }
+
+    async function updateBonusHashDisplay() {
+        const bonusSelect = document.getElementById("bonusCountrySelect");
+        const bonusHashDisplay = document.getElementById("bonusHashDisplay");
+        if (!bonusSelect || !bonusHashDisplay) return;
+
+        const selectedCountry = bonusSelect.value;
+        if (selectedCountry) {
+            bonusHashDisplay.innerHTML = `<code>Calculating hash for ${selectedCountry}...</code>`;
+            const selectedHash = await hashString(selectedCountry);
+            bonusHashDisplay.innerHTML = `<code>Hash for ${selectedCountry}:<br>${selectedHash}</code>`;
+        } else {
+            bonusHashDisplay.innerHTML = '<code style="visibility: hidden;">Placeholder</code>'; // Clear if default option selected
+        }
+    }
+
+    // --- Updated Bonus Game Check Function ---
+    function checkBonusGuess(guessedCountry, buttonElement) {
+        const bonusResult = document.getElementById("bonusResult");
+        if (!bonusResult || !buttonElement) return;
+
+        console.log(`Bonus guess: ${guessedCountry}, Correct: ${bonusCorrectCountry}`);
+
+        // Remove previous incorrect guess class from other buttons
+        const allGuessOptions = document.querySelectorAll('#bonusGuessOptions .country-guess-option');
+        allGuessOptions.forEach(opt => {
+            if (opt !== buttonElement) {
+                opt.classList.remove('incorrect-guess');
+            }
+        });
+
+
+        if (guessedCountry === bonusCorrectCountry) {
+            // Correct guess: Show green feedback, add green class, disable all buttons
+            buttonElement.classList.remove('incorrect-guess'); // Remove red if it was there
+            buttonElement.classList.add('correct-guess'); // Add green class
+            bonusResult.innerHTML = `<div class='quiz-feedback correct fade-in'>✅ Correct! Maria chose ${bonusCorrectCountry}. You found the match by hashing the countries!</div>`;
+            allGuessOptions.forEach(opt => opt.disabled = true); // Disable all after correct guess
+        } else {
+            // Incorrect guess: Show red feedback, add red class to clicked button only
+            buttonElement.classList.add('incorrect-guess');
+            bonusResult.innerHTML = `<div class='quiz-feedback incorrect fade-in'>❌ Incorrect. That's not the country Maria chose. Try checking the hashes again!</div>`;
+            // DO NOT disable buttons here, allow further guesses
+        }
+    }
+
+    function returnToSummary() {
+        console.log("Returning to Summary from Bonus Game...");
+        window.scrollTo(0, 0); // Scroll to top
+        if (bonusGameSection) bonusGameSection.classList.add("hidden");
+        if (summarySection) summarySection.classList.remove("hidden");
+        if (gameContainer) gameContainer.classList.remove("hidden");
+    }
+
+
+    // --- Dark Mode ---
+    function toggleDarkMode() {
+      const isDark = document.body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode', isDark);
+      if (darkModeToggleBtn) darkModeToggleBtn.textContent = isDark ? '☀️' : '🌗';
+      console.log(`Dark mode toggled: ${isDark}`); // Debug log
+      showToast(isDark ? '🌙 Dark mode enabled' : '☀️ Light mode enabled', true);
+    }
+
+    // --- Modal (Hashing Tool) Logic ---
+    function openModal() {
+      console.log("Opening hashing tool modal..."); // Debug log
+      const modal = document.getElementById("hashModal");
+      const input = document.getElementById("modalTextInput");
+      const results = document.getElementById("modalResults");
+      if (modal) modal.style.display = "block";
+      if (input) {
+          input.value = "";
+          input.focus();
+      }
+      if (results) results.innerHTML = "";
+    }
+
+    function closeModal() {
+      console.log("Closing hashing tool modal."); // Debug log
+      const modal = document.getElementById("hashModal");
+      if (modal) modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById("hashModal");
+      if (event.target === modal) {
+        closeModal();
+      }
+    }
+
+    async function shaHash(input, algorithm) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(input);
+      const hashBuffer = await crypto.subtle.digest(algorithm, data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function showHashes() {
+      const input = document.getElementById("modalTextInput");
+      const resultsDiv = document.getElementById("modalResults");
+      if (!input || !resultsDiv) return; // Exit if elements not found
+
+      const inputValue = input.value;
+      console.log("Generating hashes for:", inputValue); // Debug log
+      if (!inputValue && inputValue !== "") { // Allow hashing empty string
+          resultsDiv.innerHTML = "<p style='color: red;'>Please enter text to hash.</p>";
+          return;
+      }
+      resultsDiv.innerHTML = "<p><em>Generating hashes...</em></p>";
+      try {
+          const sha256 = await shaHash(inputValue, "SHA-256");
+          const sha512 = await shaHash(inputValue, "SHA-512");
+          console.log("SHA-256:", sha256); // Debug log
+          console.log("SHA-512:", sha512); // Debug log
+          resultsDiv.innerHTML = `
+            <div><h3>SHA-256:</h3><code id="modalSha256" style="word-break: break-all;">${sha256}</code><button class='copy-btn' onclick="copyToClipboard('modalSha256')">Copy</button><span id="copied-modalSha256" class="copied-message" style="display: none; color: green; font-size: 0.85rem; margin-left: 0.5rem;">✔ Copied!</span></div>
+            <div style="margin-top: 1rem;"><h3>SHA-512:</h3><code id="modalSha512" style="word-break: break-all;">${sha512}</code><button class='copy-btn' onclick="copyToClipboard('modalSha512')">Copy</button><span id="copied-modalSha512" class="copied-message" style="display: none; color: green; font-size: 0.85rem; margin-left: 0.5rem;">✔ Copied!</span></div>
+          `;
+      } catch (error) {
+          console.error("Hashing error:", error);
+          resultsDiv.innerHTML = "<p style='color: red;'>Error generating hashes. See console for details.</p>";
+      }
+    }
+
+    function copyToClipboard(elementId) {
+      const codeBlock = document.getElementById(elementId);
+      if (!codeBlock) return;
+      const textToCopy = codeBlock.textContent;
+      console.log("Attempting to copy:", textToCopy); // Debug log
+      if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(textToCopy).then(() => {
+              console.log("Clipboard API copy successful."); // Debug log
+              showToast("Copied to clipboard!"); showCopiedMessage(elementId);
+          }).catch(err => {
+              console.error("Async clipboard copy failed:", err); fallbackCopyToClipboard(textToCopy, elementId);
+          });
+      } else {
+          console.warn("Using fallback copy method."); // Debug log
+          fallbackCopyToClipboard(textToCopy, elementId);
+      }
+    }
+
+    function fallbackCopyToClipboard(text, elementId) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed"; textArea.style.top = "-9999px"; textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.focus(); textArea.select();
+        try {
+            const successful = document.execCommand("copy");
+            if (successful) {
+                console.log("Fallback copy successful."); // Debug log
+                showToast("Copied to clipboard!"); showCopiedMessage(elementId);
+            } else {
+                console.error("Fallback copy command failed."); // Debug log
+                showToast("Failed to copy (execCommand failed)", true);
+            }
+        } catch (err) {
+            console.error("Fallback copy failed with error:", err);
+            showToast("Failed to copy", true);
+        }
+        document.body.removeChild(textArea);
+    }
+
+    function showCopiedMessage(elementId) {
+        const messageId = `copied-${elementId}`;
+        const messageEl = document.getElementById(messageId);
+        if (messageEl) {
+            messageEl.style.display = "inline";
+            setTimeout(() => { messageEl.style.display = "none"; }, 1500);
+        }
+    }
+
+    // Add event listener safely
+    const modalTextInput = document.getElementById("modalTextInput");
+    if (modalTextInput) {
+        modalTextInput.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") { e.preventDefault(); showHashes(); }
+        });
+    }
+
+
+    function showToast(message, isInfo = false) {
+      const toast = document.getElementById("toast");
+      if (!toast) return;
+      console.log(`Showing toast: "${message}" (Info: ${isInfo})`); // Debug log
+      toast.textContent = message;
+      toast.className = 'toast'; // Reset class
+      if (isInfo) {
+          toast.classList.add('info');
+      }
+      toast.style.display = "block";
+      toast.style.opacity = 1;
+      if (toast.timer) clearTimeout(toast.timer);
+      toast.timer = setTimeout(() => {
+          toast.style.opacity = 0;
+          setTimeout(() => { toast.style.display = 'none'; }, 500);
+      }, 2500);
+    }
+
+    // --- Initialize the game when the DOM is fully loaded ---
+    document.addEventListener('DOMContentLoaded', initializeGame);
+
+  </script>
+</body>
+</html>
