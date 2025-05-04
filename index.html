@@ -11,10 +11,8 @@
 
   <div id="mainMenu">
     <h1>The Hashing Game</h1>
-
     <div id="mainMenuScoreDisplay" aria-live="polite">
       </div>
-
     <nav aria-label="Main game navigation">
       <ul>
         <li><button id="navLesson">🎓 What is Hashing?</button></li>
@@ -25,7 +23,6 @@
         <li><button id="navHashTool">🧪 Hashing Tool</button></li>
       </ul>
     </nav>
-
     <footer>
       <button id="rateGameBtn">⭐ Rate this Game</button>
       <a href="https://www.cryptomall.com" target="_blank" class="button-link" id="cryptoMallLink">📚 Go to CryptoMall.com</a>
@@ -57,16 +54,14 @@
     <label for="guessInput" class="sr-only">Enter your guess (lowercase)</label>
     <input id="guessInput" placeholder="Enter your guess (lowercase)" style="text-transform: lowercase;" type="text"/>
     <button id="submitGuessBtn">Submit Guess</button>
-    <div id="result" aria-live="polite"></div>
+    <div id="gameResult" aria-live="polite"></div>
     <button class="main-menu-btn">Main Menu</button>
   </div>
 
   <div class="section hidden" id="quiz">
     <h2>❓ Quick Quiz!</h2>
     <p style="font-style: italic; color: #555;">You need at least 66% to pass the quiz.</p>
-    <p id="quizQuestion">Why are hashes useful in blockchain?</p>
-    <div id="quizOptions"></div>
-    <div>
+    <p id="quizQuestion"></p> <div id="quizOptions"></div> <div>
       <span class="progress-label">Completion Progress:</span>
       <div id="quizProgressBarContainer" class="progress-bar-container">
         <div id="quizProgress" class="progress-bar"></div>
@@ -76,20 +71,23 @@
         <div id="quizScoreBar" class="progress-bar"></div>
       </div>
     </div>
-    <div id="quizResult" aria-live="polite">
-        </div>
-    <button class="main-menu-btn">Main Menu</button> </div>
+    <div id="quizResult" aria-live="polite"></div>
+    <button class="main-menu-btn">Main Menu</button>
+  </div>
 
   <div class="section hidden" id="summary">
     <h2>✅ Summary &amp; Conclusion</h2>
-    <p>Congratulations! You've learned an important concept in the world of cryptography and blockchain.</p>
+    <p>Congratulations! You've just completed the Hash Guessing Game — and learned an important concept in the world of cryptography and blockchain.</p>
     <h3>🔐 What is a hash?</h3>
-    <p>A <strong>hash</strong> is a special kind of digital fingerprint...</p> <h3>🎯 What did this game teach you?</h3>
-    <p>By giving you the hash of a secret word...</p> <h3>🔍 Where are hashes used in real life?</h3>
+    <p>A <strong>hash</strong> is a special kind of digital fingerprint. It takes any input — like a word or a file — and transforms it into a unique string of characters. If you change even a single letter, the resulting hash changes completely. This process is <strong>one-way</strong>, meaning there's no way to go backward and figure out what the original input was just by looking at the hash.</p>
+    <h3>🎯 What did this game teach you?</h3>
+    <p>By giving you the hash of a secret word, the game challenged you to find the original word. But since hashes can't be reversed, your only strategy was to guess possible words, hash them, and compare the results. When a guess matched the target hash, you knew you'd found the original word.</p>
+    <p>This hands-on experience illustrates a core principle of hashing: <strong>you can verify a match, but you can't work backward to reveal the secret</strong>.</p>
+    <h3>🔍 Where are hashes used in real life?</h3>
     <ul>
-      <li><strong>Crypto Mining (Proof of Work):</strong> ...</li>
+      <li><strong>Crypto Mining (Proof of Work):</strong> In blockchains like Bitcoin, miners guess different values (nonces) to find a hash that meets specific rules. It’s all about trial and error — just like this game.</li>
       <br/>
-      <li><strong>Password Storage:</strong> ...</li>
+      <li><strong>Password Storage:</strong> Websites don’t store your actual password. They store its hash. When you log in, the system hashes your input and checks it against the stored hash. That way, even if the database is compromised, your real password stays safe.</li>
     </ul>
     <button class="main-menu-btn">Main Menu</button>
   </div>
@@ -98,8 +96,7 @@
     <h2>🏆 Game 2 - Find the Country!</h2>
     <p>Maria and Robert have a list of countries they want to visit: Argentina, Brazil, Canada, Colombia, Peru.</p>
     <p>Maria secretly chose one and sent Robert only its SHA-256 hash:</p>
-    <code id="bonusTargetHash"></code>
-    <p>Help Robert figure out which country Maria chose! Select a country below to see its hash, then click the correct country name to make your guess.</p>
+    <code id="bonusTargetHash"></code> <p>Help Robert figure out which country Maria chose! Select a country below to see its hash, then click the correct country name to make your guess.</p>
 
     <label for="bonusCountrySelect" style="display: block; margin-top: 1rem; margin-bottom: 0.25rem; font-weight: bold;">Check Country Hash:</label>
     <select id="bonusCountrySelect">
@@ -133,8 +130,7 @@
       <label for="toolTextInput" class="sr-only">Text to hash</label>
       <input class="hash-input" id="toolTextInput" placeholder="Type something..." type="text"/>
       <button id="generateHashesBtn">Generate Hashes</button>
-      <div id="toolResults" style="margin-top: 1rem;">
-          </div>
+      <div id="toolResults" style="margin-top: 1rem;"></div>
       <button class="main-menu-btn">Main Menu</button>
   </div>
 
