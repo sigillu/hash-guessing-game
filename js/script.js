@@ -12,7 +12,7 @@ const bonusGameSection = document.getElementById("bonusGame");
 const hashToolSection = document.getElementById("hashTool");
 
 // Ensure all views are correctly selected
-const views = [mainMenu, lessonSection, gameSection, quizSection, summarySection, bonusGameSection, hashToolSection].filter(Boolean); // Filter out nulls if IDs are wrong
+const views = [mainMenu, lessonSection, gameSection, quizSection, summarySection, bonusGameSection, hashToolSection].filter(Boolean);
 if (views.length !== 7) {
     console.warn("One or more view containers might be missing or have incorrect IDs!");
 }
@@ -100,10 +100,9 @@ async function shaHash(input, algorithm) {
 
 // --- Navigation Functions ---
 function hideAllViews() {
-  console.log("Hiding all views...");
+  // console.log("Hiding all views..."); // Less verbose logging
   views.forEach(view => {
     if (view && !view.classList.contains('hidden')) {
-        // console.log(` Hiding: ${view.id}`); // Optional: Reduce console noise
         view.classList.add('hidden');
     }
   });
@@ -131,7 +130,7 @@ function showMainMenu() {
 // --- Main Menu Score Display ---
 function updateMainMenuScoreDisplay() {
     if (!mainMenuScoreDisplay) { console.error("mainMenuScoreDisplay element not found"); return; }
-    console.log(`Updating score display. Last score: ${lastQuizScorePercent}%`);
+    // console.log(`Updating score display. Last score: ${lastQuizScorePercent}%`); // Less verbose
     let scoreMessage = "Complete the Quick Quiz to see your score!";
     let scoreClass = "";
     if (lastQuizScorePercent >= 66) { scoreMessage = `🎉🏆✨ Your latest quiz score was: <strong>${lastQuizScorePercent}%</strong> ✨🏆🎉`; scoreClass = "score-highlight"; }
@@ -144,7 +143,7 @@ function updateMainMenuScoreDisplay() {
 // --- Game Initialization ---
 async function initializeGame() {
   try {
-    console.log("Initializing game (Alternative Version - Attempt 4)...");
+    console.log("Initializing game (Alternative Version - Attempt 5)...");
 
     // --- Setup Event Listeners FIRST ---
     if (darkModeToggleBtn) { console.log("Attaching dark mode listener"); darkModeToggleBtn.onclick = toggleDarkMode; } else { console.error("Dark Mode Toggle Button not found!"); }
@@ -191,8 +190,8 @@ async function initializeGame() {
     if (bonusTargetHashEl) { bonusTargetHashEl.textContent = bonusTargetHashValue; } else { console.error("Bonus Target Hash element not found for initial display"); }
 
     // --- Initial View ---
-    hideAllViews(); // Hide all first
-    showMainMenu(); // Then show main menu
+    hideAllViews();
+    showMainMenu();
 
     console.log("Initialization complete.");
   } catch (error) {
@@ -203,8 +202,29 @@ async function initializeGame() {
 }
 
 // --- Helper Functions ---
-// ... (Keep shuffleArray, showToast, copyToClipboard, fallbackCopyToClipboard, showCopiedMessage)
-function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } return array; }
+// ** MODIFIED shuffleArray **
+function shuffleArray(array) {
+    // Add checks and logging inside shuffleArray
+    if (!Array.isArray(array)) {
+        console.error("ERROR in shuffleArray: Input is not an array!", array);
+        return undefined; // Return undefined explicitly if input is bad
+    }
+    // console.log("DEBUG: shuffleArray received array with length:", array.length); // Less verbose
+    // Make a copy to avoid modifying the original array directly
+    const arrayCopy = [...array];
+    try {
+        for (let i = arrayCopy.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arrayCopy[i], arrayCopy[j]] = [arrayCopy[j], arrayCopy[i]]; // Swap elements
+        }
+        // console.log("DEBUG: shuffleArray finished shuffling. Returning array."); // Less verbose
+        return arrayCopy; // Return the shuffled COPY
+    } catch (error) {
+        console.error("ERROR during shuffleArray execution:", error);
+        return undefined; // Return undefined if an error occurs during shuffling
+    }
+}
+// ... other helper functions ...
 function showToast(message, isInfo = false) { if (!toast) return; toast.textContent = message; toast.className = 'toast'; if (isInfo) { toast.classList.add('info'); } toast.style.display = "block"; toast.style.opacity = 1; if (toast.timer) clearTimeout(toast.timer); toast.timer = setTimeout(() => { toast.style.opacity = 0; setTimeout(() => { toast.style.display = 'none'; }, 500); }, 2500); }
 function copyToClipboard(elementId) { const codeBlock = document.getElementById(elementId); if (!codeBlock) return; const textToCopy = codeBlock.textContent; if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(textToCopy).then(() => { showToast("Copied to clipboard!"); showCopiedMessage(elementId); }).catch(err => { console.error("Async clipboard copy failed:", err); fallbackCopyToClipboard(textToCopy, elementId); }); } else { fallbackCopyToClipboard(textToCopy, elementId); } }
 function fallbackCopyToClipboard(text, elementId) { const textArea = document.createElement("textarea"); textArea.value = text; textArea.style.position = "fixed"; textArea.style.top = "-9999px"; textArea.style.left = "-9999px"; document.body.appendChild(textArea); textArea.focus(); textArea.select(); try { const successful = document.execCommand("copy"); if (successful) { showToast("Copied to clipboard!"); showCopiedMessage(elementId); } else { showToast("Failed to copy", true); } } catch (err) { console.error("Fallback copy failed:", err); showToast("Failed to copy", true); } document.body.removeChild(textArea); }
@@ -214,7 +234,6 @@ function showCopiedMessage(elementId) { const messageId = `copied-${elementId}`;
 function toggleDarkMode() { const isDark = document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', isDark); if (darkModeToggleBtn) darkModeToggleBtn.textContent = isDark ? '☀️' : '🌗'; console.log(`Dark mode toggled: ${isDark}`); }
 
 // --- Game 1 (Guess the Word) Logic ---
-// ... (Keep prepareGame1 and checkGuess functions as previously corrected)
 async function prepareGame1() { console.log("Preparing Game 1..."); secretWord = wordList[Math.floor(Math.random() * wordList.length)]; console.log("New secret word:", secretWord); try { targetHash = await hashString(secretWord); console.log("Target Hash:", targetHash); if (hashDisplay) hashDisplay.textContent = targetHash; } catch (e) { console.error("Failed to set target hash", e); if (hashDisplay) hashDisplay.textContent = "Error"; } if (clueSpan) clueSpan.innerHTML = `It's a ${categoryLabel.toLowerCase()}, a ${secretWord.length}-letter word, lowercase only.`; attempts = 0; if (gameResultDiv) gameResultDiv.innerHTML = ""; if (guessInput) { guessInput.value = ""; guessInput.disabled = false; guessInput.focus(); } if (submitGuessBtn) submitGuessBtn.disabled = false; }
 async function checkGuess() { if (!guessInput || !gameResultDiv) return; guessInput.value = guessInput.value.toLowerCase().trim(); const guess = guessInput.value; if (!guess) return; guessInput.value = ""; let guessedHash = "Error"; try { guessedHash = await hashString(guess); console.log("Guessed hash:", guessedHash); } catch (e) { console.error("Hash failed", e); } console.log("Target hash:", targetHash); if (guess === secretWord) { streak++; gameResultDiv.innerHTML = `<div class='quiz-feedback correct fade-in'>✅ Correct! "${guess}" matches!<br/><span style='display: block; margin-top: 0.5rem; font-family: monospace;'>Hash:<br><mark style='background-color: #d6f5e6; color: #207544; word-break: break-word; display: inline-block;'>${guessedHash}</mark></span></div>`; if(guessInput) guessInput.disabled = true; if (submitGuessBtn) submitGuessBtn.disabled = true; gameResultDiv.innerHTML += `<button onclick="prepareGame1()" style="margin-left: 1rem; margin-top: 0.5rem;">Next Word</button>`; } else { streak = 0; attempts++; let hints = [ `Starts with '${secretWord.charAt(0)}'.`, `Second letter is '${secretWord.charAt(1)}'.`, `Ends with '${secretWord.charAt(secretWord.length - 1)}'.`, secretWord.length > 3 ? `Third is '${secretWord.charAt(2)}'.` : '', secretWord.length > 4 ? `Fourth is '${secretWord.charAt(3)}'.` : '', secretWord.length > 5 ? `Fifth is '${secretWord.charAt(4)}'.` : '' ].filter(Boolean); let newHint = attempts - 1 < hints.length ? hints[attempts - 1] : `Try rearranging thoughts! 😉`; if (clueSpan) { let hintDiv = clueSpan.querySelector(`.hint-highlight.hint-${attempts}`); if (!hintDiv) { hintDiv = document.createElement('div'); hintDiv.className = `hint-highlight hint-${attempts}`; clueSpan.appendChild(hintDiv); } hintDiv.innerHTML = `Hint ${attempts}: ${newHint}`; } else { console.error("Clue span missing for hint"); } gameResultDiv.innerHTML = `<div class='quiz-feedback incorrect fade-in'>❌ Nope. "${guess}"<br/><pre style='margin:0;padding:0;font-family:monospace;white-space:pre-wrap;word-wrap:break-word;line-height:1.2;'><span style='display:inline-block;margin-top:0.5rem;'>Your Hash:</span><mark style='background-color:#ffd6d6;color:#b22222;word-break:break-all;'>${guessedHash}</mark><span style='display:inline-block;margin-top:0.5rem;' class='target-hash-label'>Target Hash:</span><mark style='background-color:#f0f0f0;color:#333;word-break:break-all;' class='target-hash-value'>${targetHash}</mark></pre></div>`; if(guessInput) guessInput.focus(); } }
 
@@ -222,10 +241,47 @@ async function checkGuess() { if (!guessInput || !gameResultDiv) return; guessIn
 // --- Quiz Logic ---
 function quizIsInProgress() { return numQuestions > 0 && quizIndex > 0 && quizIndex < numQuestions; }
 function resetQuizState() { console.log("Resetting quiz state."); quizIndex = 0; correctAnswers = 0; numQuestions = 0; currentQuizQuestions = []; if(quizQuestionElement) quizQuestionElement.textContent = ""; if(quizOptionsContainer) quizOptionsContainer.innerHTML = ""; if(quizResultDiv) quizResultDiv.innerHTML = ""; if(quizCompletionProgressBar) { quizCompletionProgressBar.style.width = '0%'; quizCompletionProgressBar.textContent = '0% Complete'; } if(quizScoreProgressBar) { quizScoreProgressBar.style.width = '0%'; quizScoreProgressBar.textContent = '0% Score'; } }
-function startQuiz() { console.log("Executing startQuiz()..."); quizIndex = 0; correctAnswers = 0; lastQuizScorePercent = -1; const shuffledQuestions = shuffleArray([...allQuizQuestions]); currentQuizQuestions = shuffledQuestions.slice(0, 4); numQuestions = currentQuizQuestions.length; console.log("Number of questions selected:", currentQuizQuestions.length); if (!quizQuestionElement || !quizOptionsContainer || !quizResultDiv || !quizCompletionProgressBar || !quizScoreProgressBar) { console.error("Quiz elements missing!"); return; } updateQuizProgressBars(); console.log("Calling showNextQuizQuestion() from startQuiz..."); showNextQuizQuestion(); }
+// ** MODIFIED startQuiz **
+function startQuiz() {
+    console.log("Executing startQuiz()...");
+    quizIndex = 0;
+    correctAnswers = 0;
+    lastQuizScorePercent = -1;
+
+    // Check if allQuizQuestions is valid before shuffling
+    if (!Array.isArray(allQuizQuestions) || allQuizQuestions.length === 0) {
+         console.error("ERROR: allQuizQuestions is not a valid array or is empty!");
+          if(quizResultDiv) quizResultDiv.innerHTML = "<p style='color:red;'>Error: Quiz questions could not be loaded.</p>";
+         return; // Stop execution
+    }
+
+    // Shuffle and select questions
+    console.log("DEBUG: Calling shuffleArray with allQuizQuestions...");
+    const shuffledQuestions = shuffleArray(allQuizQuestions); // Pass the original directly, shuffleArray makes a copy
+
+    // FIX: Add check to ensure shuffledQuestions is an array
+    if (!Array.isArray(shuffledQuestions)) {
+        console.error("ERROR: shuffleArray did not return a valid array! Got:", shuffledQuestions);
+         if(quizResultDiv) quizResultDiv.innerHTML = "<p style='color:red;'>Error: Failed to shuffle quiz questions.</p>";
+        return; // Stop execution if shuffling failed
+    }
+    console.log("DEBUG: shuffleArray returned successfully. Length:", shuffledQuestions.length);
+
+    currentQuizQuestions = shuffledQuestions.slice(0, 4); // Now this should be safe
+    numQuestions = currentQuizQuestions.length;
+    console.log("Number of questions selected:", currentQuizQuestions.length);
+
+    if (!quizQuestionElement || !quizOptionsContainer || !quizResultDiv || !quizCompletionProgressBar || !quizScoreProgressBar) {
+        console.error("Quiz elements missing!");
+        return;
+    }
+    updateQuizProgressBars();
+    console.log("Calling showNextQuizQuestion() from startQuiz...");
+    showNextQuizQuestion();
+}
 function updateQuizProgressBars() { if (!quizCompletionProgressBar || !quizScoreProgressBar) return; const completionPercent = numQuestions > 0 ? Math.round(((quizIndex) / numQuestions) * 100) : 0; const scorePercent = numQuestions > 0 ? Math.round((correctAnswers / numQuestions) * 100) : 0; quizCompletionProgressBar.style.width = `${completionPercent}%`; quizCompletionProgressBar.textContent = `${completionPercent}% Complete`; quizScoreProgressBar.style.width = `${scorePercent}%`; quizScoreProgressBar.textContent = `${scorePercent}% Score`; }
 function showFinalQuizResults() { console.log("Quiz finished."); const finalScorePercent = numQuestions > 0 ? Math.round((correctAnswers / numQuestions) * 100) : 0; lastQuizScorePercent = finalScorePercent; console.log("Stored lastQuizScorePercent:", lastQuizScorePercent); updateMainMenuScoreDisplay(); if (quizResultDiv) { quizResultDiv.innerHTML = `<div class='quiz-feedback ${finalScorePercent >= 66 ? "correct" : "incorrect"}'>Quiz Complete! Score: ${correctAnswers}/${numQuestions} (${finalScorePercent}%).</div>`; quizResultDiv.innerHTML += `<button onclick='startQuiz()' style="margin-left: 0.5rem; margin-top: 1rem;">Try Quiz Again</button>`; } }
-// --- REPLACED showNextQuizQuestion with DEBUG version ---
+// --- showNextQuizQuestion with DEBUG logs ---
 function showNextQuizQuestion() {
     // Ensure elements exist
     if (!quizQuestionElement || !quizOptionsContainer || !quizResultDiv) {
@@ -291,7 +347,7 @@ function showNextQuizQuestion() {
             } else {
                 div.style.backgroundColor = '#f8d7da'; div.style.borderColor = '#f5c2c7'; div.style.color = '#842029'; div.style.fontWeight = 'bold';
                 allOptions.forEach(opt => {
-                    const originalOption = current.options.find(o => o && o.text === opt.textContent); // Added check for o
+                    const originalOption = current.options.find(o => o && o.text === opt.textContent);
                     if (originalOption && originalOption.value === current.correct) {
                         opt.style.backgroundColor = '#d1e7dd'; opt.style.borderColor = '#badbcc'; opt.style.color = '#0f5132'; opt.style.opacity = '1';
                     }
@@ -332,17 +388,13 @@ function showNextQuizQuestion() {
 
 
 // --- Bonus Game Logic ---
-// ... (Keep prepareBonusGame, updateBonusHashDisplay, checkBonusGuess as previously corrected)
 function prepareBonusGame() { console.log("Preparing Bonus Game..."); if (bonusTargetHashEl) { bonusTargetHashEl.textContent = bonusTargetHashValue; } if (bonusSelect) bonusSelect.value = ""; if (bonusHashDisplay) bonusHashDisplay.innerHTML = '<code style="visibility: hidden;">Placeholder</code>'; if (bonusResult) bonusResult.innerHTML = ""; const guessOptions = document.querySelectorAll('#bonusGuessOptions .country-guess-option'); guessOptions.forEach(opt => { opt.disabled = false; opt.classList.remove('correct-guess', 'incorrect-guess'); }); }
 async function updateBonusHashDisplay() { if (!bonusSelect || !bonusHashDisplay) return; const selectedCountry = bonusSelect.value; if (selectedCountry) { bonusHashDisplay.innerHTML = `<code>Calculating...</code>`; try { const selectedHash = await hashString(selectedCountry); console.log(`Hash for ${selectedCountry}: ${selectedHash}`); bonusHashDisplay.innerHTML = `<code>Hash for ${selectedCountry}:<br>${selectedHash}</code>`; } catch(e){ bonusHashDisplay.innerHTML = `<code>Error hashing</code>`; } } else { bonusHashDisplay.innerHTML = '<code style="visibility: hidden;">Placeholder</code>'; } }
 function checkBonusGuess(guessedCountry, buttonElement) { if (!bonusResult || !buttonElement) return; console.log(`Bonus guess: ${guessedCountry}, Correct: ${bonusCorrectCountry}`); const allGuessOptions = document.querySelectorAll('#bonusGuessOptions .country-guess-option'); allGuessOptions.forEach(opt => { if (opt !== buttonElement) opt.classList.remove('incorrect-guess'); }); if (guessedCountry === bonusCorrectCountry) { buttonElement.classList.remove('incorrect-guess'); buttonElement.classList.add('correct-guess'); bonusResult.innerHTML = `<div class='quiz-feedback correct fade-in'>✅ Correct! Maria chose ${bonusCorrectCountry}.</div>`; allGuessOptions.forEach(opt => opt.disabled = true); } else { buttonElement.classList.add('incorrect-guess'); bonusResult.innerHTML = `<div class='quiz-feedback incorrect fade-in'>❌ Incorrect. Try again!</div>`; } }
 
-
 // --- Hashing Tool Logic ---
-// ... (Keep prepareHashTool, showToolHashes as previously corrected)
 function prepareHashTool() { console.log("Preparing Hash Tool view..."); if (toolTextInput) { toolTextInput.value = ""; toolTextInput.focus(); } if (toolResultsDiv) toolResultsDiv.innerHTML = ""; }
 async function showToolHashes() { if (!toolTextInput || !toolResultsDiv) return; const inputValue = toolTextInput.value; console.log("Generating tool hashes for:", inputValue); toolResultsDiv.innerHTML = "<p><em>Generating hashes...</em></p>"; let sha256 = "Error"; let sha512 = "Error"; try { sha256 = await shaHash(inputValue, "SHA-256"); sha512 = await shaHash(inputValue, "SHA-512"); console.log("Tool SHA-256:", sha256); console.log("Tool SHA-512:", sha512); toolResultsDiv.innerHTML = `<div><h3>SHA-256:</h3><code id="toolSha256" style="word-break: break-all;">${sha256}</code><button class='copy-btn' onclick="copyToClipboard('toolSha256')">Copy</button><span id="copied-toolSha256" class="copied-message" style="display: none; color: green; font-size: 0.85rem; margin-left: 0.5rem;">✔ Copied!</span></div> <div style="margin-top: 1rem;"><h3>SHA-512:</h3><code id="toolSha512" style="word-break: break-all;">${sha512}</code><button class='copy-btn' onclick="copyToClipboard('toolSha512')">Copy</button><span id="copied-toolSha512" class="copied-message" style="display: none; color: green; font-size: 0.85rem; margin-left: 0.5rem;">✔ Copied!</span></div>`; } catch (error) { console.error("Hashing error:", error); toolResultsDiv.innerHTML = "<p style='color: red;'>Error generating hashes.</p>"; } }
-
 
 // --- Initialize ---
 document.addEventListener('DOMContentLoaded', initializeGame);
