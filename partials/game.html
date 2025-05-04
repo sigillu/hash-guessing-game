@@ -1,0 +1,16 @@
+<div class="section hidden" id="game">
+        <h2>🧩 Guess the Word</h2>
+        <p>The SHA-256 hash of the secret word is:</p>
+        <code id="hashDisplay"></code>
+        <p class="reminder-text">Remember, you can't directly calculate the word from this hash – you have to guess!</p>
+        <p><strong>Clue:</strong> <span class="clue-hints" id="clue"></span></p>
+        <label for="guessInput" class="sr-only">Enter your guess (lowercase)</label>
+        <input id="guessInput" placeholder="Enter your guess (lowercase)" style="text-transform: lowercase;" type="text"/>
+        <button id="submitGuessBtn">Submit Guess</button>
+        <div id="result" aria-live="polite"></div>
+        <div class="hidden" id="nextStep">
+          <button id="goToQuizBtn">Go to Quiz</button>
+        </div>
+        <button id="backToLessonBtn" class="secondary" onclick="goBackToLesson()">← Back to Lesson</button>
+        <button id="skipToQuizBtn" class="secondary" onclick="goToQuiz()">Skip to Quiz →</button>
+      </div>
