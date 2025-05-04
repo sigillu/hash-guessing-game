@@ -21,35 +21,36 @@ code {
   background: #f0f0f0;
   padding: 4px 6px;
   border-radius: 4px;
-  display: block;
+  display: block; /* Ensure block display for layout */
   margin: 0.5rem 0;
   font-family: monospace;
   color: #333;
   word-break: break-word;
   transition: background-color 0.3s, color 0.3s;
 }
-.hidden { display: none !important; } /* Use !important to ensure override if needed */
+.hidden { display: none !important; }
 
-/* --- NEW: Main Menu Styles --- */
+/* --- Main Menu Styles --- */
 #mainMenu {
-    max-width: 700px; /* Optional: Constrain width */
-    margin: 1rem auto; /* Center the menu */
+    max-width: 700px;
+    margin: 1rem auto;
     padding: 1.5rem;
-    text-align: center; /* Center title and score */
+    text-align: center;
 }
 #mainMenu h1 {
     margin-bottom: 1.5rem;
-    color: #0056b3; /* Example color */
+    color: #0056b3;
 }
 #mainMenuScoreDisplay {
     margin: 1rem 0 1.5rem 0;
     padding: 0.75rem;
-    background-color: #eef; /* Light background for score */
+    background-color: #eef;
     border-radius: 6px;
     font-style: italic;
-    min-height: 1.5em; /* Prevent layout shift */
-    display: inline-block; /* Allow centering */
-    max-width: 90%; /* Prevent overflow */
+    min-height: 1.5em;
+    display: inline-block;
+    max-width: 90%;
+    transition: background-color 0.3s, color 0.3s; /* Add transition */
 }
 #mainMenu nav ul {
     list-style: none;
@@ -59,7 +60,7 @@ code {
 #mainMenu nav li {
     margin-bottom: 0.75rem;
 }
-#mainMenu nav button { /* Style main menu navigation buttons */
+#mainMenu nav button {
     background-color: #007bff;
     border: none;
     color: #fff !important;
@@ -67,12 +68,12 @@ code {
     font-weight: bold;
     border-radius: 4px;
     cursor: pointer;
-    width: 80%; /* Example width */
+    width: 80%;
     max-width: 300px;
     text-align: center;
-    font-size: 1.1rem; /* Slightly larger font */
+    font-size: 1.1rem;
     transition: background-color 0.2s, transform 0.1s;
-    display: inline-block; /* Needed for width/max-width */
+    display: inline-block;
 }
 #mainMenu nav button:hover {
     background-color: #0056b3;
@@ -84,14 +85,15 @@ code {
     border-top: 1px solid #ccc;
     font-size: 0.9em;
     text-align: center;
+    transition: border-top-color 0.3s; /* Add transition */
 }
 #mainMenu footer button,
-#mainMenu footer a.button-link { /* Style footer items */
+#mainMenu footer a.button-link {
     display: inline-block;
-    background-color: #6c757d; /* Secondary color */
+    background-color: #6c757d;
     color: #fff !important;
     padding: 0.4rem 0.8rem;
-    font-weight: normal; /* Less emphasis than main nav */
+    font-weight: normal;
     border-radius: 4px;
     cursor: pointer;
     margin: 0.25rem 0.5rem;
@@ -105,60 +107,40 @@ code {
     background-color: #5a6268;
     transform: translateY(-1px);
 }
-/* Specific footer button styles if needed (e.g., Rate button icon alignment) */
-#rateGameBtn {
-    /* Add specific styles if needed */
+#rateGameBtn { /* Icon alignment if needed */ }
+#cryptoMallLink { /* Icon alignment if needed */ }
+
+/* --- Standard Button (Non-Nav) --- */
+/* General button style if needed beyond specific contexts */
+button:not(#darkModeToggle):not(.main-menu-btn):not(#generateHashesBtn):not(#submitGuessBtn) {
+  /* Define styles for other potential buttons */
 }
-#cryptoMallLink {
-    /* Add specific styles if needed */
+.button-link { /* For links styled as buttons, like CryptoMall */
+  /* ... inherit or define specific styles ... */
 }
 
-
-/* Standard Button Styling (Includes Main Menu Button within sections) */
-button, .button-link {
-  display: inline-block;
-  background-color: #007bff;
-  border: none;
-  color: #fff !important;
-  padding: 0.5rem 1rem;
-  font-weight: bold;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-top: 1rem;
-  margin-right: 0.5rem;
-  text-decoration: none;
-  text-align: center;
-  font-family: Arial, sans-serif;
-  font-size: inherit;
-  transition: background-color 0.2s, transform 0.1s;
-}
-button.secondary { /* Kept for potential future use, or if needed elsewhere */
-    background-color: #6c757d;
-}
-button.secondary:hover {
-    background-color: #5a6268;
-}
-button:hover:not(.main-menu-btn-quiz-disabled), /* Prevent hover effect if we disable quiz btn */
-.button-link:hover {
-  background-color: #0056b3;
-  transform: translateY(-1px);
-  color: #fff !important;
-}
-button:active, .button-link:active {
-  transform: translateY(0px);
-}
-
-/* --- NEW: Main Menu Button within sections --- */
+/* --- Main Menu Button (within sections) --- */
 .main-menu-btn {
-    margin-top: 1.5rem; /* Ensure spacing from content */
-    margin-right: 0; /* No right margin needed if it's the only button */
-    background-color: #6c757d; /* Use secondary color */
-    float: right; /* Optional: position to the right */
+    margin-top: 1.5rem;
+    margin-right: 0;
+    background-color: #6c757d;
+    float: right; /* Position to the right */
+    /* Inherits base button styles like padding, color, etc. */
+    border: none;
+    color: #fff !important;
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: inherit;
+    transition: background-color 0.2s, transform 0.1s;
 }
 .main-menu-btn:hover {
      background-color: #5a6268;
+     transform: translateY(-1px); /* Add hover effect back */
 }
-
 
 /* Inputs and Selects */
 input[type="text"], select {
@@ -170,152 +152,217 @@ input[type="text"], select {
   width: auto;
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
-
-/* Quiz Specific */
-.quiz-option { /* ... (Keep existing quiz styles) ... */ }
-.quiz-option:hover { /* ... */ }
-ol li { /* ... */ }
-.progress-bar-container { /* ... */ }
-.progress-bar { /* ... */ }
-#quizProgress { /* ... */ }
-#quizScoreBar { /* ... */ }
-.progress-label { /* ... */ }
-
-/* Animations & Feedback Styles */
-.fade-in { /* ... (Keep existing) ... */ }
-@keyframes fadeIn { /* ... */ }
-.clue-hints { /* ... */ }
-.hint-highlight { /* ... */ }
-@keyframes fadeInHint { /* ... */ }
-.quiz-feedback { /* ... */ }
-.quiz-feedback.correct { /* ... */ }
-.quiz-feedback.incorrect { /* ... */ }
-.quiz-feedback.incorrect .target-hash-label { /* ... */ }
-.reminder-text { /* ... */ }
-
-/* Bonus Game Specific Styles */
-#bonusGame .country-guess-option { /* ... (Keep existing) ... */ }
-/* ... (Keep other bonus game styles) ... */
-
-/* Exit Screen Score Animation (Now used on Main Menu) */
-.score-highlight { /* ... (Keep existing) ... */ }
-@keyframes pulseScore { /* ... */ }
-body.dark-mode .score-highlight { /* Ensure score text is readable */
-    color: #f0f0f0 !important;
-    background-color: transparent !important; /* Override potential bg flash */
+/* Specific style for hash tool input */
+input[type="text"].hash-input {
+  padding: 0.5rem;
+  width: 100%;
+  max-width: 500px; /* Keep max width */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 1rem; /* Keep margin */
+  font-size: 1rem;
+  box-sizing: border-box; /* Keep box-sizing */
 }
 
+
+/* Quiz Specific */
+.quiz-option {
+  background-color: #f0f0f0;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 0.25rem 0;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+.quiz-option:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+/* FIX: Added list item spacing back */
+ol li {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+.progress-bar-container {
+    margin-top: 0.75rem;
+    height: 20px;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 100%;
+}
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    text-align: center;
+    color: white;
+    line-height: 20px;
+    font-size: 0.8rem;
+    transition: width 0.5s ease;
+    white-space: nowrap;
+}
+#quizProgress { background-color: #4caf50; }
+#quizScoreBar { background-color: #007bff; }
+.progress-label {
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-top: 1rem;
+    margin-bottom: 0.25rem;
+    display: block;
+    color: #555;
+    transition: color 0.3s; /* Add transition */
+}
+
+/* Animations & Feedback Styles */
+.fade-in { animation: fadeIn 0.6s ease-in; } /* Slightly faster fade */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.clue-hints { margin-top: 1rem; line-height: 1.6; }
+/* FIX: Ensure hint styles exist */
+.hint-highlight {
+  background-color: #ffffcc;
+  padding: 0.25rem 0.5rem;
+  border-left: 4px solid #ffcc00;
+  margin-top: 0.5rem;
+  display: block;
+  animation: fadeInHint 0.6s ease-in-out;
+  transition: background-color 0.3s, color 0.3s, border-left-color 0.3s; /* Add transition */
+}
+@keyframes fadeInHint { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+.quiz-feedback {
+  padding: 0.75rem;
+  margin-top: 1rem;
+  border-radius: 6px;
+  font-weight: bold;
+  animation: fadeInFeedback 0.6s ease-in-out;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Add transition */
+}
+@keyframes fadeInFeedback { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+.quiz-feedback.correct { background-color: #e6ffed; color: #207544; border: 1px solid #b5e2c5; }
+.quiz-feedback.incorrect { background-color: #ffeaea; color: #b22222; border: 1px solid #e2b5b5; }
+.quiz-feedback.incorrect .target-hash-label { color: #333; transition: color 0.3s; } /* Default light */
+.reminder-text { font-size: 0.9em; font-style: italic; color: #666; margin-top: 0.25rem; margin-bottom: 1rem; transition: color 0.3s; }
+
+/* Bonus Game Specific Styles */
+#bonusGame .country-guess-option {
+    display: inline-block; margin: 0.5rem 0.25rem; background-color: #007bff; border: none; color: #fff !important; transition: background-color 0.2s, transform 0.1s; padding: 0.5rem 1rem; font-weight: bold; border-radius: 4px; cursor: pointer;
+}
+#bonusGame .country-guess-option:hover:not(:disabled) { background-color: #0056b3; transform: translateY(-1px); }
+/* FIX: Ensure guess styles exist and use !important */
+#bonusGame .country-guess-option.correct-guess { background-color: #28a745 !important; cursor: default; }
+#bonusGame .country-guess-option.incorrect-guess { background-color: #dc3545 !important; cursor: default; }
+#bonusGame .country-guess-option:disabled { background-color: #adb5bd; cursor: not-allowed; transform: none; }
+#bonusGame .country-guess-option.correct-guess:disabled { background-color: #28a745 !important; }
+#bonusGame code { margin-top: 0.25rem; margin-bottom: 1rem; }
+#bonusHashDisplay { min-height: 3em; padding-top: 0.5rem; }
+
+/* Main Menu Score Animation */
+.score-highlight p { animation: pulseScore 1.5s infinite ease-in-out; display: inline-block; /* Needed for transform */ }
+@keyframes pulseScore { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.03); opacity: 0.9; } }
+body.dark-mode .score-highlight p { color: #f0f0f0 !important; background-color: transparent !important; }
+
 /* Dark Mode Toggle Button Styling */
-#darkModeToggle { /* ... (Keep existing) ... */ }
-#darkModeToggle:hover { /* ... */ }
+#darkModeToggle { position: fixed; top: 1rem; right: 1rem; z-index: 1002; padding: 0.3rem 0.6rem; font-size: 1.2rem; background: none; border: 1px solid #ccc; border-radius: 50%; line-height: 1; cursor: pointer; width: auto; box-sizing: content-box; margin: 0; color: #333; transition: background-color 0.2s, border-color 0.3s, color 0.3s; }
+#darkModeToggle:hover { background-color: rgba(0,0,0,0.05); }
 
 /* Visually Hidden Class */
-.sr-only { /* ... (Keep existing) ... */ }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0; }
 
 /* Responsive Design */
 @media (max-width: 600px) {
   body { margin: 1rem; font-size: 16px; }
   h1, h2, h3 { font-size: 1.2em; }
   .section { padding: 1rem 0.75rem; }
-
-  /* Main menu adjustments */
   #mainMenu { padding: 1rem; }
   #mainMenu nav button { width: 95%; font-size: 1rem; padding: 0.6rem 1rem; }
   #mainMenu footer button, #mainMenu footer a.button-link { font-size: 0.85rem; padding: 0.35rem 0.7rem; margin: 0.25rem 0.3rem;}
 
-  /* General buttons/inputs */
-  button:not(#darkModeToggle), .button-link, input[type="text"], select {
-    width: 100%;
-    box-sizing: border-box;
-    margin: 0.5rem 0;
-    font-size: 1rem;
+  /* Stack most buttons/inputs */
+  #mainMenu nav button, /* Stack main menu buttons */
+  button:not(#darkModeToggle),
+  .button-link:not(#cryptoMallLink), /* Allow footer link to be inline */
+  input[type="text"], select {
+    width: 100%; box-sizing: border-box; margin: 0.5rem 0; font-size: 1rem;
   }
-  #darkModeToggle { /* Keep size */ width: auto; box-sizing: content-box; margin: 0; top: 0.5rem; right: 0.5rem; }
-  .main-menu-btn { float: none; /* Stack buttons */ } /* Adjust main menu button position */
+  #darkModeToggle { width: auto; box-sizing: content-box; margin: 0; top: 0.5rem; right: 0.5rem; }
+  .main-menu-btn { float: none; /* Stack main menu button in sections */ width: 100%; margin-top: 1.5rem;}
+  #mainMenu footer button, #mainMenu footer a.button-link { width: auto; /* Keep footer items inline */ }
 
-  .quiz-option { /* ... */ }
-  code { /* ... */ }
-  .progress-bar { /* ... */ }
-  #bonusGame .country-guess-option { /* ... Stack bonus options ... */ }
+  .quiz-option { font-size: 1rem; padding: 0.75rem; }
+  code { font-size: 0.85rem; }
+  .progress-bar { font-size: 0.7rem; }
+  #bonusGame .country-guess-option { display: block; width: 100%; margin: 0.5rem 0; box-sizing: border-box; }
 }
 
 /* --- Dark Mode Styles --- */
 body.dark-mode { background-color: #121212; color: #f0f0f0; }
 body.dark-mode .section { background-color: #1e1e1e; border-color: #333; }
 body.dark-mode code { background-color: #2c2c2c; color: #e0e0e0; }
-
 /* Dark Mode Main Menu */
-body.dark-mode #mainMenu h1 { color: #4dabf7; /* Example lighter blue */ }
-body.dark-mode #mainMenuScoreDisplay { background-color: #2a2a2a; border: 1px solid #444; }
-body.dark-mode #mainMenu nav button { background-color: #444; color: #fff !important; }
+body.dark-mode #mainMenu h1 { color: #4dabf7; }
+body.dark-mode #mainMenuScoreDisplay { background-color: #2a2a2a; border: 1px solid #444; color: #f0f0f0; }
+body.dark-mode #mainMenu nav button { background-color: #444; }
 body.dark-mode #mainMenu nav button:hover { background-color: #555; }
 body.dark-mode #mainMenu footer { border-top-color: #333; }
-body.dark-mode #mainMenu footer button,
-body.dark-mode #mainMenu footer a.button-link { background-color: #5a6268; }
-body.dark-mode #mainMenu footer button:hover,
-body.dark-mode #mainMenu footer a.button-link:hover { background-color: #495057; }
-
+body.dark-mode #mainMenu footer button, body.dark-mode #mainMenu footer a.button-link { background-color: #5a6268; }
+body.dark-mode #mainMenu footer button:hover, body.dark-mode #mainMenu footer a.button-link:hover { background-color: #495057; }
 /* Dark Mode Standard Buttons/Inputs */
-body.dark-mode button, body.dark-mode .button-link { background-color: #444; color: #fff !important; }
-body.dark-mode button:hover, body.dark-mode .button-link:hover { background-color: #555; color: #fff !important; }
-body.dark-mode button.secondary { background-color: #5a6268; }
-body.dark-mode button.secondary:hover { background-color: #495057; }
-body.dark-mode .main-menu-btn { background-color: #5a6268; } /* Dark mode main menu button */
+body.dark-mode button:not(#darkModeToggle), body.dark-mode .button-link { background-color: #444; color: #fff !important; }
+body.dark-mode button:not(#darkModeToggle):hover, body.dark-mode .button-link:hover { background-color: #555; color: #fff !important; }
+body.dark-mode .main-menu-btn { background-color: #5a6268; }
 body.dark-mode .main-menu-btn:hover { background-color: #495057; }
 body.dark-mode input[type="text"], body.dark-mode select { background-color: #2c2c2c; color: #f0f0f0; border-color: #555; }
-
 /* Dark Mode Quiz & Feedback */
 body.dark-mode .quiz-option { background-color: #2a2a2a; border-color: #555; color: #f0f0f0; }
 body.dark-mode .quiz-option:hover { background-color: #444; color: #fff; }
-body.dark-mode .hint-highlight { background-color: #444444; color: #ffff66; border-left: 4px solid #ffcc00; }
+body.dark-mode .hint-highlight { background-color: #3a3a33; color: #ffffcc; border-left: 4px solid #ffcc00; }
 body.dark-mode .quiz-feedback.correct { background-color: #1a3a24; color: #a6e2b8; border-color: #3d6e4f; }
 body.dark-mode .quiz-feedback.incorrect { background-color: #4d1f1f; color: #f5b5b5; border-color: #8c4d4d; }
 body.dark-mode .quiz-feedback.incorrect .target-hash-label { color: #f0f0f0 !important; }
 body.dark-mode .target-hash-value { background-color: #2c2c2c !important; color: #e0e0e0 !important; }
 body.dark-mode .reminder-text { color: #aaa; }
-
 /* Dark Mode Progress Bars */
 body.dark-mode .progress-bar-container { background-color: #444; }
 body.dark-mode #quizProgress { background-color: #367c39; }
 body.dark-mode #quizScoreBar { background-color: #0d6efd; }
 body.dark-mode .progress-label { color: #aaa; }
-
 /* Dark Mode Bonus Game */
-/* ... (Keep existing dark mode bonus game styles) ... */
-
+body.dark-mode #bonusGame .country-guess-option { background-color: #444; border: none; color: #fff !important; }
+body.dark-mode #bonusGame .country-guess-option:hover:not(:disabled) { background-color: #555; }
+body.dark-mode #bonusGame .country-guess-option.correct-guess { background-color: #198754 !important; }
+body.dark-mode #bonusGame .country-guess-option.incorrect-guess { background-color: #b02a37 !important; }
+body.dark-mode #bonusGame .country-guess-option:disabled { background-color: #495057; }
+body.dark-mode #bonusGame .country-guess-option.correct-guess:disabled { background-color: #198754 !important; }
 /* Dark Mode Toggle Button */
 body.dark-mode #darkModeToggle { border-color: #555; color: #f0f0f0; }
 body.dark-mode #darkModeToggle:hover { background-color: rgba(255,255,255,0.1); }
-
 /* Dark Mode Hashing Tool */
 body.dark-mode input[type="text"].hash-input { background-color: #2c2c2c; color: #f0f0f0; border-color: #555; }
 body.dark-mode .copy-btn { background-color: #555; }
 body.dark-mode .copy-btn:hover { background-color: #666; }
-
 /* Dark Mode Toast */
 body.dark-mode .toast { background-color: #333; color: #fff; }
 body.dark-mode .toast.info { background-color: #0e5460; }
 
-/* Hashing Tool Specific Styles (Keep relevant parts) */
-input[type="text"].hash-input { /* ... */ }
-.copy-btn { /* ... */ }
-/* Removed modal styles (.modal, .modal-content, .close, .modal-trigger) */
-.toast { /* ... (Keep existing) ... */ }
-.toast.info { /* ... */ }
-@keyframes fadeInOut { /* ... */ }
-.hash-title { /* ... */ }
-@keyframes popIn { /* ... */ }
-
-/* --- Removed Modal Styles --- */
-/* .modal { ... } */
-/* .modal-content { ... } */
-/* .close { ... } */
-/* .modal-trigger { ... } */
-/* body.dark-mode .modal-content { ... } */
-/* body.dark-mode .close { ... } */
-/* body.dark-mode .modal-trigger { ... } */
-/* @keyframes slideDown { ... } */
-
-/* --- Removed Exit Screen Styles --- */
-/* #exitScreen { ... } */
-/* #exitScreen p { ... } */
+/* Hashing Tool Specific Styles */
+.copy-btn {
+  display: inline-block;
+  margin-left: 0.25rem; /* Reduced margin */
+  margin-top: 0;
+  background: #666;
+  color: white;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border-radius: 4px;
+  vertical-align: middle; /* Align with code block */
+  transition: background-color 0.2s;
+}
+.toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background-color: #28a745; color: white; padding: 0.5rem 1rem; border-radius: 5px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); z-index: 3000; font-size: 0.9rem; animation: fadeInOut 2.5s ease-in-out forwards; opacity: 0; transition: background-color 0.3s, color 0.3s; }
+.toast.info { background-color: #17a2b8; }
+@keyframes fadeInOut { 0% { opacity: 0; transform: translate(-50%, 20px); } 10% { opacity: 1; transform: translate(-50%, 0); } 90% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, 20px); } }
+.hash-title { animation: popIn 0.6s ease-out; } /* Faster popIn */
+@keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 60% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); } }
