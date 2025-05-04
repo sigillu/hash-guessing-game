@@ -1,20 +1,14 @@
 // js/game.js
-import { initializeGame } from './logic.js';
+import { init_lesson, showGame } from './logic.js';
 
-// Initialization for the lesson section
-export function init_lesson() {
-  const btn = document.getElementById('showGameBtn');
-  if (btn) {
-    btn.addEventListener('click', () => {
-      location.hash = '#/game';
-    });
-  }
+// Called when lesson partial loads
+export function init_lesson_wrapper() {
+  init_lesson();
 }
-window.init_lesson = init_lesson;
+window.init_lesson = init_lesson_wrapper;
 
-// Initialization for the game section
+// Called when game partial loads
 export function init_game() {
-  // Populate hash, clues, and set up game logic
-  initializeGame();
+  showGame();
 }
 window.init_game = init_game;
