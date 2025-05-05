@@ -1,77 +1,193 @@
 /* Basic Styling */
 html { scroll-behavior: smooth; }
-body { /* ... keep body styles ... */ }
-.section { /* ... keep section styles ... */ }
-code { /* ... keep code styles ... */ }
+body {
+  font-family: Arial, sans-serif;
+  margin: 2rem;
+  background-color: #ffffff; /* Light mode default */
+  color: #333; /* Light mode default */
+  transition: background-color 0.3s, color 0.3s;
+}
+.section {
+  margin-bottom: 2rem; padding: 1rem; background: #f9f9f9; border-radius: 8px; border: 1px solid #ddd; transition: background-color 0.3s, border-color 0.3s;
+}
+code {
+  background: #f0f0f0; padding: 4px 6px; border-radius: 4px; display: block; margin: 0.5rem 0; font-family: monospace; color: #333; word-break: break-word; transition: background-color 0.3s, color 0.3s;
+}
 .hidden { display: none !important; }
 
 /* --- Main Menu Styles --- */
-#mainMenu { /* ... keep menu container styles ... */ }
-#mainMenu h1 { /* ... keep h1 styles ... */ }
-#mainMenuScoreDisplay { /* ... keep score display styles ... */ }
+#mainMenu { max-width: 700px; margin: 1rem auto; padding: 1.5rem; text-align: center; }
+#mainMenu h1 { margin-bottom: 1.5rem; color: #0056b3; transition: color 0.3s; }
+#mainMenuScoreDisplay { margin: 1rem 0 1.5rem 0; padding: 0.75rem; background-color: #eef; border-radius: 6px; font-style: italic; min-height: 1.5em; display: inline-block; max-width: 90%; transition: background-color 0.3s, color 0.3s; border: 1px solid transparent; /* Add base border */ }
+#mainMenu ul { list-style: none; padding-left: 0; margin: 0; }
+#mainMenu nav li { margin-bottom: 0.75rem; }
 
-/* FIX: Corrected selector for main menu list */
-#mainMenu ul {
-    list-style: none; /* Remove bullet points */
-    padding-left: 0;  /* Remove default padding */
-    margin: 0;
+/* === UPDATED: Main Menu Nav Buttons === */
+#mainMenu nav button {
+    display: block; /* Make buttons block level */
+    width: 90%; /* Use percentage width */
+    max-width: 400px; /* Optional: Limit max width */
+    margin-left: auto; /* Center block elements */
+    margin-right: auto; /* Center block elements */
+    box-sizing: border-box; /* Include padding in width */
+    background-color: #007bff;
+    border: none;
+    color: #fff !important;
+    padding: 0.75rem 1rem; /* Adjust padding as needed */
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center; /* Center text within button */
+    font-size: 1.1rem;
+    transition: background-color 0.2s, transform 0.1s;
 }
-#mainMenu nav li { /* Keep li margin */
-    margin-bottom: 0.75rem;
-}
-#mainMenu nav button { /* Keep nav button styles */ }
-#mainMenu nav button:hover { /* Keep hover styles */ }
-#mainMenu footer { /* Keep footer styles */ }
+#mainMenu nav button:hover { background-color: #0056b3; transform: translateY(-1px); }
+
+/* === UPDATED: Main Menu Footer Styles === */
+#mainMenu footer { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid #ccc; font-size: 0.9em; text-align: center; transition: border-top-color 0.3s; }
 #mainMenu footer button,
-#mainMenu footer a.button-link { /* Keep footer item styles */ }
-/* ... (keep other footer styles) ... */
+#mainMenu footer a.button-link { /* Apply consistent styling */
+    display: inline-block;
+    background-color: #6c757d;
+    color: #fff !important;
+    padding: 0.4rem 0.8rem;
+    font-weight: normal;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 0.5rem 0.25rem; /* Adjust margin for stacking/spacing */
+    text-decoration: none;
+    font-size: 0.9rem;
+    border: none;
+    transition: background-color 0.2s, transform 0.1s;
+}
+#mainMenu footer button:hover,
+#mainMenu footer a.button-link:hover { background-color: #5a6268; transform: translateY(-1px); }
 
-/* --- Standard Button Styling --- */
-/* ... (keep other button styles) ... */
 
 /* --- Main Menu Button (within sections) --- */
-.main-menu-btn { /* ... keep main-menu-btn styles ... */ }
-.main-menu-btn:hover { /* ... keep hover styles ... */ }
+.main-menu-btn { /* ... keep styles as before ... */ margin-top: 1.5rem; margin-right: 0; background-color: #6c757d; float: right; border: none; color: #fff !important; padding: 0.5rem 1rem; font-weight: bold; border-radius: 4px; cursor: pointer; text-align: center; font-family: Arial, sans-serif; font-size: inherit; transition: background-color 0.2s, transform 0.1s; }
+.main-menu-btn:hover { background-color: #5a6268; transform: translateY(-1px); }
 
 /* Inputs and Selects */
-/* ... (keep input/select styles) ... */
-input[type="text"].hash-input { /* ... */ }
+input[type="text"], select { /* ... keep styles ... */ }
+input[type="text"].hash-input { /* ... keep styles ... */ }
 
 /* Quiz Specific */
-/* ... (Keep all quiz styles, including ol li fix from before) ... */
-ol li { margin-bottom: 1rem; line-height: 1.6; } /* Ensure this is present */
+.quiz-option { /* ... keep styles ... */ }
+.quiz-option:hover { /* ... */ }
+ol li { margin-bottom: 1rem; line-height: 1.6; } /* Correct spacing */
+.progress-bar-container { /* ... keep styles ... */ }
+.progress-bar { /* ... */ }
+#quizProgress { /* ... */ }
+#quizScoreBar { /* ... */ }
+.progress-label { /* ... keep styles ... */ }
 
 /* Animations & Feedback Styles */
-/* ... (Keep animations, feedback, hint styles) ... */
-.hint-highlight { /* Ensure this exists */
-  background-color: #ffffcc; padding: 0.25rem 0.5rem; border-left: 4px solid #ffcc00; margin-top: 0.5rem; display: block; animation: fadeInHint 0.6s ease-in-out; transition: background-color 0.3s, color 0.3s, border-left-color 0.3s;
-}
+.fade-in { /* ... */ } @keyframes fadeIn { /* ... */ }
+.clue-hints { /* ... */ }
+.hint-highlight { /* ... keep styles ... */ } @keyframes fadeInHint { /* ... */ }
+.quiz-feedback { /* ... keep styles ... */ } @keyframes fadeInFeedback { /* ... */ }
+.quiz-feedback.correct { /* ... */ }
+.quiz-feedback.incorrect { /* ... */ }
+.quiz-feedback.incorrect .target-hash-label { /* ... */ }
+.reminder-text { /* ... keep styles ... */ }
 
 /* Bonus Game Specific Styles */
-/* ... (Keep bonus game styles, ensure guess feedback classes exist) ... */
-#bonusGame .country-guess-option.correct-guess { background-color: #28a745 !important; cursor: default; }
-#bonusGame .country-guess-option.incorrect-guess { background-color: #dc3545 !important; cursor: default; }
-
+/* ... (Keep all bonus game styles, including .correct-guess, .incorrect-guess) ... */
 
 /* Main Menu Score Animation */
-/* ... (Keep score animation styles) ... */
+.score-highlight p { animation: pulseScore 1.5s infinite ease-in-out; display: inline-block; } @keyframes pulseScore { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.03); opacity: 0.9; } }
+
 
 /* Dark Mode Toggle Button Styling */
-/* ... (Keep toggle styles) ... */
+#darkModeToggle { /* ... keep styles ... */ }
+#darkModeToggle:hover { /* ... */ }
 
 /* Visually Hidden Class */
-/* ... (Keep sr-only styles) ... */
+.sr-only { /* ... keep styles ... */ }
 
 /* Responsive Design */
-/* ... (Keep responsive styles) ... */
+@media (max-width: 600px) {
+  body { margin: 1rem; font-size: 16px; }
+  h1, h2, h3 { font-size: 1.2em; }
+  .section { padding: 1rem 0.75rem; }
+  #mainMenu { padding: 1rem; }
+  /* Main menu buttons already block/full width */
+  #mainMenu nav button { width: 95%; font-size: 1rem; padding: 0.6rem 1rem; }
+  /* Footer items */
+  #mainMenu footer button, #mainMenu footer a.button-link { display: block; width: 95%; margin: 0.5rem auto; box-sizing: border-box; }
 
-/* --- Dark Mode Styles --- */
-/* ... (Keep ALL dark mode styles, ensuring they target the corrected selectors like #mainMenu ul if needed - though list-style is usually fine) ... */
-body.dark-mode #mainMenu ul { /* No specific dark mode needed for list-style/padding */ }
+  /* General buttons/inputs */
+  button:not(#darkModeToggle), /* Excludes toggle */
+  .button-link:not(#cryptoMallLink), /* Excludes footer link */
+  input[type="text"], select {
+    width: 100%; box-sizing: border-box; margin: 0.5rem 0; font-size: 1rem;
+  }
+  #darkModeToggle { width: auto; box-sizing: content-box; margin: 0; top: 0.5rem; right: 0.5rem; }
+  .main-menu-btn { float: none; width: 100%; margin-top: 1.5rem;}
+
+  /* ... (keep other responsive adjustments) ... */
+}
+
+/* --- Dark Mode Styles (VERIFIED/REVIEWED) --- */
+body.dark-mode { background-color: #121212; color: #f0f0f0; }
+body.dark-mode .section { background-color: #1e1e1e; border-color: #333; }
+body.dark-mode code { background-color: #2c2c2c; color: #e0e0e0; }
+/* Dark Mode Main Menu */
+body.dark-mode #mainMenu h1 { color: #4dabf7; }
+body.dark-mode #mainMenuScoreDisplay { background-color: #2a2a2a; border: 1px solid #444; color: #f0f0f0; }
+body.dark-mode #mainMenu nav button { background-color: #444; }
+body.dark-mode #mainMenu nav button:hover { background-color: #555; }
+body.dark-mode #mainMenu footer { border-top-color: #333; }
+body.dark-mode #mainMenu footer button, body.dark-mode #mainMenu footer a.button-link { background-color: #5a6268; }
+body.dark-mode #mainMenu footer button:hover, body.dark-mode #mainMenu footer a.button-link:hover { background-color: #495057; }
+/* Dark Mode Standard Buttons/Inputs */
+/* (Styles below might need adjustment if base button styles change significantly) */
+/* body.dark-mode button:not(#darkModeToggle), body.dark-mode .button-link { background-color: #444; color: #fff !important; } */
+/* body.dark-mode button:not(#darkModeToggle):hover, body.dark-mode .button-link:hover { background-color: #555; color: #fff !important; } */
+body.dark-mode .main-menu-btn { background-color: #5a6268; }
+body.dark-mode .main-menu-btn:hover { background-color: #495057; }
+body.dark-mode input[type="text"], body.dark-mode select { background-color: #2c2c2c; color: #f0f0f0; border-color: #555; }
+body.dark-mode input[type="text"].hash-input { background-color: #2c2c2c; color: #f0f0f0; border-color: #555; } /* Ensure hash input also covered */
+
+/* Dark Mode Quiz & Feedback */
+body.dark-mode .quiz-option { background-color: #2a2a2a; border-color: #555; color: #f0f0f0; }
+body.dark-mode .quiz-option:hover { background-color: #444; color: #fff; }
+body.dark-mode .hint-highlight { background-color: #3a3a33; color: #ffffcc; border-left: 4px solid #ffcc00; }
+body.dark-mode .quiz-feedback.correct { background-color: #1a3a24; color: #a6e2b8; border-color: #3d6e4f; }
+body.dark-mode .quiz-feedback.incorrect { background-color: #4d1f1f; color: #f5b5b5; border-color: #8c4d4d; }
+body.dark-mode .quiz-feedback.incorrect .target-hash-label { color: #f0f0f0 !important; }
+body.dark-mode .target-hash-value { background-color: #2c2c2c !important; color: #e0e0e0 !important; }
+body.dark-mode .reminder-text { color: #aaa; }
+/* Dark Mode Progress Bars */
+body.dark-mode .progress-bar-container { background-color: #444; }
+body.dark-mode #quizProgress { background-color: #367c39; }
+body.dark-mode #quizScoreBar { background-color: #0d6efd; }
+body.dark-mode .progress-label { color: #aaa; }
+/* Dark Mode Bonus Game */
+body.dark-mode #bonusGame .country-guess-option { background-color: #444; border: none; color: #fff !important; }
+body.dark-mode #bonusGame .country-guess-option:hover:not(:disabled) { background-color: #555; }
+body.dark-mode #bonusGame .country-guess-option.correct-guess { background-color: #198754 !important; }
+body.dark-mode #bonusGame .country-guess-option.incorrect-guess { background-color: #b02a37 !important; }
+body.dark-mode #bonusGame .country-guess-option:disabled { background-color: #495057; }
+body.dark-mode #bonusGame .country-guess-option.correct-guess:disabled { background-color: #198754 !important; }
+/* Dark Mode Toggle Button */
+body.dark-mode #darkModeToggle { border-color: #555; color: #f0f0f0; }
+body.dark-mode #darkModeToggle:hover { background-color: rgba(255,255,255,0.1); }
+/* Dark Mode Hashing Tool */
+body.dark-mode .copy-btn { background-color: #555; }
+body.dark-mode .copy-btn:hover { background-color: #666; }
+/* Dark Mode Toast */
+body.dark-mode .toast { background-color: #333; color: #fff; }
+body.dark-mode .toast.info { background-color: #0e5460; }
+/* Dark mode score highlight */
+body.dark-mode .score-highlight p { color: #f0f0f0 !important; /* Ensure text is visible */ }
 
 
 /* Hashing Tool Specific Styles */
-/* ... (Keep hashing tool styles) ... */
-.copy-btn { /* ... keep copy button styles ... */ }
-.toast { /* ... keep toast styles ... */ }
-/* ... (Keep remaining styles) ... */
+.copy-btn { display: inline-block; margin-left: 0.25rem; margin-top: 0; background: #666; color: white; border: none; padding: 0.25rem 0.5rem; font-size: 0.8rem; cursor: pointer; border-radius: 4px; vertical-align: middle; transition: background-color 0.2s; }
+.toast { /* ... keep styles ... */ }
+.toast.info { /* ... */ }
+@keyframes fadeInOut { /* ... */ }
+.hash-title { /* ... keep styles ... */ }
+@keyframes popIn { /* ... */ }
