@@ -23,114 +23,34 @@
         <li><button id="navHashTool">🧪 Hashing Tool</button></li>
       </ul>
     </nav>
+
     <footer>
       <button id="rateGameBtn">⭐ Rate this Game</button>
-      <a href="https://www.cryptomall.com" target="_blank" class="button-link" id="cryptoMallLink">📚 Go to CryptoMall.com</a>
+      <br/> <a href="https://www.cryptomall.com" target="_blank" class="button-link" id="cryptoMallLink">📚 Go to CryptoMall.com</a>
     </footer>
-  </div>
+    </div>
 
   <div class="section hidden" id="lesson">
-    <h2>🎓 What Is Hashing? (Quick Crash Course)</h2>
-    <ol>
-      <li>A hash is like a fingerprint for data. It turns any input into a unique string.</li>
-      <li>The same input always gives the same hash. For example:
-        <code>"banana" → b9bc5a11f18c0d63f6d9d30d5e00fcb58a91a0b1fbd2f3441dc8e4edcd7a1637</code>
-      </li>
-      <li>Even a small change = completely different hash:
-        <code>"Banana" → 7c5507a22e37c423f5b2d4d69ae857aad8fa1e75be3e2dc7b54f77f0252fefb0</code>
-      </li>
-      <li>Hashes are one-way. You can go from a word to a hash, but not backward.</li>
-      <li>Blockchains use hashing to protect data — changing data changes the hash!</li>
-    </ol>
     <button class="main-menu-btn">Main Menu</button>
   </div>
 
   <div class="section hidden" id="game">
-    <h2>🧩 Guess the Word</h2>
-    <p>The SHA-256 hash of the secret word is:</p>
-    <code id="hashDisplay"></code>
-    <p class="reminder-text">Remember, you can't directly calculate the word from this hash – you have to guess!</p>
-    <p><strong>Clue:</strong> <span class="clue-hints" id="clue"></span></p>
-    <label for="guessInput" class="sr-only">Enter your guess (lowercase)</label>
-    <input id="guessInput" placeholder="Enter your guess (lowercase)" style="text-transform: lowercase;" type="text"/>
-    <button id="submitGuessBtn">Submit Guess</button>
-    <div id="gameResult" aria-live="polite"></div>
     <button class="main-menu-btn">Main Menu</button>
   </div>
 
   <div class="section hidden" id="quiz">
-    <h2>❓ Quick Quiz!</h2>
-    <p style="font-style: italic; color: #555;">You need at least 66% to pass the quiz.</p>
-    <p id="quizQuestion"></p> <div id="quizOptions"></div> <div>
-      <span class="progress-label">Completion Progress:</span>
-      <div id="quizProgressBarContainer" class="progress-bar-container">
-        <div id="quizProgress" class="progress-bar"></div>
-      </div>
-      <span class="progress-label">Score Progress:</span>
-      <div id="quizScoreBarContainer" class="progress-bar-container">
-        <div id="quizScoreBar" class="progress-bar"></div>
-      </div>
-    </div>
-    <div id="quizResult" aria-live="polite"></div>
-    <button class="main-menu-btn">Main Menu</button>
+     <button class="main-menu-btn">Main Menu</button>
   </div>
 
   <div class="section hidden" id="summary">
-    <h2>✅ Summary &amp; Conclusion</h2>
-    <p>Congratulations! You've just completed the Hash Guessing Game — and learned an important concept in the world of cryptography and blockchain.</p>
-    <h3>🔐 What is a hash?</h3>
-    <p>A <strong>hash</strong> is a special kind of digital fingerprint. It takes any input — like a word or a file — and transforms it into a unique string of characters. If you change even a single letter, the resulting hash changes completely. This process is <strong>one-way</strong>, meaning there's no way to go backward and figure out what the original input was just by looking at the hash.</p>
-    <h3>🎯 What did this game teach you?</h3>
-    <p>By giving you the hash of a secret word, the game challenged you to find the original word. But since hashes can't be reversed, your only strategy was to guess possible words, hash them, and compare the results. When a guess matched the target hash, you knew you'd found the original word.</p>
-    <p>This hands-on experience illustrates a core principle of hashing: <strong>you can verify a match, but you can't work backward to reveal the secret</strong>.</p>
-    <h3>🔍 Where are hashes used in real life?</h3>
-    <ul>
-      <li><strong>Crypto Mining (Proof of Work):</strong> In blockchains like Bitcoin, miners guess different values (nonces) to find a hash that meets specific rules. It’s all about trial and error — just like this game.</li>
-      <br/>
-      <li><strong>Password Storage:</strong> Websites don’t store your actual password. They store its hash. When you log in, the system hashes your input and checks it against the stored hash. That way, even if the database is compromised, your real password stays safe.</li>
-    </ul>
     <button class="main-menu-btn">Main Menu</button>
   </div>
 
   <div class="section hidden" id="bonusGame">
-    <h2>🏆 Game 2 - Find the Country!</h2>
-    <p>Maria and Robert have a list of countries they want to visit: Argentina, Brazil, Canada, Colombia, Peru.</p>
-    <p>Maria secretly chose one and sent Robert only its SHA-256 hash:</p>
-    <code id="bonusTargetHash"></code> <p>Help Robert figure out which country Maria chose! Select a country below to see its hash, then click the correct country name to make your guess.</p>
-
-    <label for="bonusCountrySelect" style="display: block; margin-top: 1rem; margin-bottom: 0.25rem; font-weight: bold;">Check Country Hash:</label>
-    <select id="bonusCountrySelect">
-      <option value="">-- Select a Country --</option>
-      <option value="Argentina">Argentina</option>
-      <option value="Brazil">Brazil</option>
-      <option value="Canada">Canada</option>
-      <option value="Colombia">Colombia</option>
-      <option value="Peru">Peru</option>
-    </select>
-
-    <div id="bonusHashDisplay">
-      <code style="visibility: hidden;">Placeholder</code> </div>
-
-    <p style="margin-top: 1.5rem; font-weight: bold;">Which country did Maria choose?</p>
-    <div id="bonusGuessOptions">
-      <button class="country-guess-option" onclick="checkBonusGuess('Argentina', this)">Argentina</button>
-      <button class="country-guess-option" onclick="checkBonusGuess('Brazil', this)">Brazil</button>
-      <button class="country-guess-option" onclick="checkBonusGuess('Canada', this)">Canada</button>
-      <button class="country-guess-option" onclick="checkBonusGuess('Colombia', this)">Colombia</button>
-      <button class="country-guess-option" onclick="checkBonusGuess('Peru', this)">Peru</button>
-    </div>
-    <div id="bonusResult" aria-live="polite"></div>
-    <button class="main-menu-btn">Main Menu</button>
+     <button class="main-menu-btn">Main Menu</button>
   </div>
 
   <div class="section hidden" id="hashTool">
-      <h2 class="hash-title">🧪 Hashing Tool</h2>
-      <p><em>SHA-256 and SHA-512 are cryptographic hash functions that convert any input into a fixed-length digital fingerprint.</em></p>
-      <p>Type any word or phrase below and see how it is hashed using both SHA-256 and SHA-512:</p>
-      <label for="toolTextInput" class="sr-only">Text to hash</label>
-      <input class="hash-input" id="toolTextInput" placeholder="Type something..." type="text"/>
-      <button id="generateHashesBtn">Generate Hashes</button>
-      <div id="toolResults" style="margin-top: 1rem;"></div>
       <button class="main-menu-btn">Main Menu</button>
   </div>
 
